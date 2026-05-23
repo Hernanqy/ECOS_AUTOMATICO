@@ -204,6 +204,7 @@ function App() {
   const [screen, setScreen] = useState<Screen>("home");
   const [progress, setProgress] = useState<GameProgress>(loadProgress);
   const [scanMessage, setScanMessage] = useState("");
+  const [manualCode, setManualCode] = useState("");
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scannerRunningRef = useRef(false);
   const hasScannedRef = useRef(false);
@@ -290,7 +291,7 @@ function App() {
     if (zoneCompleted) {
       setScanMessage(zone.success);
     } else {
-      setScanMessage(`¡Eco ${scannedCode} encontrado! ${newFoundInZone.length}/3`);
+      setScanMessage(`¡Eco encontrado! ${newFoundInZone.length}/3`);
     }
 
     setTimeout(() => {
@@ -322,22 +323,37 @@ function App() {
 
     hasScannedRef.current = false;
     scannerRunningRef.current = false;
-    setScanMessage("Apuntá la cámara al QR.");
+    setManualCode("");
+    setScanMessage("Acercá el QR completo al recuadro.");
 
-    const scanner = new Html5Qrcode("qr-reader");
+    const scanner = new Html5Qrcode("qr-reader", {
+      verbose: false,
+      formatsToSupport: [0]
+    });
+
     scannerRef.current = scanner;
+
+    const qrboxSize = Math.min(
+      330,
+      Math.floor(window.innerWidth * 0.78)
+    );
 
     scanner
       .start(
         { facingMode: "environment" },
         {
-          fps: 10,
-          qrbox: { width: 240, height: 240 },
-          aspectRatio: 1
+          fps: 15,
+          qrbox: {
+            width: qrboxSize,
+            height: qrboxSize
+          },
+          disableFlip: false
         },
         (decodedText) => {
           if (hasScannedRef.current) return;
+
           hasScannedRef.current = true;
+          setScanMessage("QR detectado. Validando...");
           handleScan(decodedText);
         },
         () => {}
@@ -347,7 +363,7 @@ function App() {
       })
       .catch(() => {
         scannerRunningRef.current = false;
-        setScanMessage("No se pudo abrir la cámara.");
+        setScanMessage("No se pudo abrir la cámara. Probá ingresar el código.");
       });
 
     return () => {
@@ -394,6 +410,11 @@ function App() {
   const simulateScan = () => {
     const missingCode = currentZone.codes.find((code) => !progress.foundCodes[currentZone.id].includes(code));
     if (missingCode) handleScan(missingCode);
+  };
+
+  const submitManualCode = () => {
+    if (!manualCode.trim()) return;
+    handleScan(manualCode);
   };
 
   return (
@@ -568,6 +589,18 @@ function App() {
             <div className="scanner-card">
               <div id="qr-reader" />
               <div className="scan-message">{scanMessage}</div>
+            </div>
+
+            <div className="manual-card">
+              <span>Si la cámara no lo toma, ingresá el código interno.</span>
+              <div className="manual-row">
+                <input
+                  value={manualCode}
+                  onChange={(event) => setManualCode(event.target.value.toUpperCase())}
+                  placeholder="Ej: M1"
+                />
+                <button onClick={submitManualCode}>OK</button>
+              </div>
             </div>
 
             <button className="secondary-button" onClick={goToMission}>

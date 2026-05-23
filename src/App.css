@@ -863,3 +863,53 @@ button {
   font-weight: 900;
   cursor: pointer;
 }
+
+.manual-card {
+  padding: 16px;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+}
+
+.manual-card span {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.manual-row {
+  display: grid;
+  grid-template-columns: 1fr 76px;
+  gap: 10px;
+}
+
+.manual-row input {
+  width: 100%;
+  height: 54px;
+  border: 2px solid #d7e8ff;
+  border-radius: 18px;
+  padding: 0 16px;
+  color: var(--deep);
+  font-size: 20px;
+  font-weight: 900;
+  text-transform: uppercase;
+  outline: none;
+}
+
+.manual-row input:focus {
+  border-color: var(--blue);
+}
+
+.manual-row button {
+  height: 54px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--blue);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+}
