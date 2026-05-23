@@ -21,6 +21,8 @@ type GameProgress = {
   foundCodes: Record<ZoneId, string[]>;
 };
 
+const validCodes = ["M1", "M2", "M3", "L1", "L2", "L3", "CO1", "CO2", "CO3", "CA1", "CA2", "CA3"];
+
 const zones: Zone[] = [
   {
     id: "museo",
@@ -86,16 +88,50 @@ function saveProgress(progress: GameProgress) {
   localStorage.setItem("ecos_progress", JSON.stringify(progress));
 }
 
+function extractValidCode(text: string) {
+  const upperText = text.trim().toUpperCase();
+
+  for (const code of validCodes) {
+    if (upperText.includes(code)) {
+      return code;
+    }
+  }
+
+  return "";
+}
+
 function getCodeFromQR(value: string) {
   const cleanValue = value.trim();
 
   try {
     const url = new URL(cleanValue);
-    const eco = url.searchParams.get("eco") || url.searchParams.get("qr") || "";
-    return eco.trim().toUpperCase();
+    const eco =
+      url.searchParams.get("eco") ||
+      url.searchParams.get("ECO") ||
+      url.searchParams.get("qr") ||
+      url.searchParams.get("QR") ||
+      "";
+
+    const codeFromParam = extractValidCode(eco);
+
+    if (codeFromParam) {
+      return codeFromParam;
+    }
+
+    const codeFromFullUrl = extractValidCode(cleanValue);
+
+    if (codeFromFullUrl) {
+      return codeFromFullUrl;
+    }
   } catch {
-    return cleanValue.toUpperCase();
+    const codeFromText = extractValidCode(cleanValue);
+
+    if (codeFromText) {
+      return codeFromText;
+    }
   }
+
+  return cleanValue.toUpperCase().replace(/[^A-Z0-9]/g, "");
 }
 
 function getInitialQRFromUrl() {
@@ -104,7 +140,7 @@ function getInitialQRFromUrl() {
 
   if (!eco) return "";
 
-  return eco.trim().toUpperCase();
+  return getCodeFromQR(eco);
 }
 
 function clearUrlParams() {
