@@ -66,24 +66,10 @@ function App() {
   return (
     <main className="app-shell">
       <section className="phone-screen">
-        <header className="top-brand">
-          <div className="brand-left">
-            <img src="/logo-municipio.png" alt="Olavarría Municipio" />
-            <div className="brand-text">
-              <strong>OLAVARRÍA</strong>
-              <span>MUNICIPIO</span>
-            </div>
+        <header className="top-brand centered-brand">
+          <div className="maxima-brand-box">
+            <img src="/logo-la-maxima.png" alt="Polo Educativo y Recreativo La Máxima" />
           </div>
-
-          <button className="bell-button" aria-label="Notificaciones">
-            <svg viewBox="0 0 32 32" aria-hidden="true">
-              <path d="M10 23h12" />
-              <path d="M12 23V14a4 4 0 0 1 8 0v9" />
-              <path d="M14 26a2.4 2.4 0 0 0 4 0" />
-              <path d="M20 15c3 2 3 5 3 8" />
-              <path d="M12 15c-3 2-3 5-3 8" />
-            </svg>
-          </button>
         </header>
 
         <div className="background-lines" aria-hidden="true">
