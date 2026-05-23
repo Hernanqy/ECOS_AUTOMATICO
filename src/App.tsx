@@ -21,7 +21,12 @@ type GameProgress = {
   foundCodes: Record<ZoneId, string[]>;
 };
 
-const validCodes = ["M1", "M2", "M3", "L1", "L2", "L3", "CO1", "CO2", "CO3", "CA1", "CA2", "CA3"];
+const validCodes = [
+  "M1", "M2", "M3",
+  "L1", "L2", "L3",
+  "CO1", "CO2", "CO3",
+  "CA1", "CA2", "CA3"
+];
 
 const zones: Zone[] = [
   {
@@ -261,12 +266,12 @@ function App() {
 
     if (codeZoneIndex === -1) {
       setScreen("scanner");
-      setScanMessage("Este QR no pertenece a la experiencia.");
+      setScanMessage(`No reconocido: ${scannedCode}`);
 
       setTimeout(() => {
         hasScannedRef.current = false;
         setScanMessage("Probá con otro QR.");
-      }, 1700);
+      }, 3500);
 
       return;
     }
