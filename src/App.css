@@ -62,10 +62,6 @@ button {
   box-shadow: 0 14px 34px rgba(0, 91, 234, 0.28);
 }
 
-.centered-brand {
-  justify-content: center;
-}
-
 .maxima-brand-box {
   width: min(340px, 86%);
   height: 82px;
@@ -127,10 +123,21 @@ button {
   top: 410px;
 }
 
-.hero-section {
+.hero-section,
+.page-section {
   position: relative;
   z-index: 2;
+}
+
+.hero-section {
   padding-top: 54px;
+}
+
+.page-section {
+  padding-top: 34px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
 }
 
 .title-block {
@@ -340,11 +347,19 @@ button {
   font-weight: 900;
 }
 
-.start-button {
+.start-button,
+.scan-button,
+.secondary-button,
+.menu-button {
   width: 100%;
+  border: 0;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.start-button {
   height: 76px;
   margin-top: 26px;
-  border: 0;
   border-radius: 25px;
   display: flex;
   align-items: center;
@@ -353,13 +368,15 @@ button {
   color: #ffffff;
   background: linear-gradient(135deg, var(--blue), var(--blue-2));
   box-shadow: 0 14px 24px rgba(0, 91, 234, 0.26);
-  cursor: pointer;
+}
+
+.start-button.compact {
+  margin-top: 0;
 }
 
 .start-button span {
   font-size: 37px;
   line-height: 1;
-  font-weight: 900;
   letter-spacing: -0.7px;
 }
 
@@ -371,6 +388,224 @@ button {
   stroke-width: 4;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.page-title span,
+.mission-kicker {
+  display: inline-flex;
+  width: fit-content;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #eaf3ff;
+  color: var(--blue);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.page-title h2 {
+  margin: 12px 0 0;
+  color: var(--deep);
+  font-size: 44px;
+  line-height: 0.95;
+  letter-spacing: -1.5px;
+}
+
+.page-title p {
+  margin: 12px 0 0;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.map-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.map-item {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #d8e9ff;
+  border-radius: 26px;
+  display: grid;
+  grid-template-columns: 70px 1fr 42px;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(20, 81, 160, 0.10);
+}
+
+.map-item.active {
+  border-color: var(--blue);
+  background: #f7fbff;
+}
+
+.map-item.done {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #ffffff;
+}
+
+.map-item.locked {
+  opacity: 0.46;
+}
+
+.map-icon {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  background: #eef6ff;
+}
+
+.map-icon img {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+}
+
+.map-info strong {
+  display: block;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.map-info span {
+  display: block;
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.map-state {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #eaf3ff;
+  color: var(--blue);
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.map-item.done .map-icon,
+.map-item.done .map-state {
+  background: #ffffff;
+  color: var(--blue);
+}
+
+.mission-card {
+  padding: 26px 22px;
+  border-radius: 34px;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.mission-icon {
+  width: 112px;
+  height: 112px;
+  margin: 0 auto 14px;
+  display: grid;
+  place-items: center;
+  border-radius: 34px;
+  background: #eef6ff;
+}
+
+.mission-icon img {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+}
+
+.mission-card h2 {
+  margin: 14px 0 0;
+  color: var(--blue);
+  font-size: 52px;
+  line-height: 0.95;
+  letter-spacing: -1.5px;
+}
+
+.mission-card h3 {
+  margin: 10px 0 0;
+  color: var(--deep);
+  font-size: 25px;
+}
+
+.mission-card p {
+  max-width: 290px;
+  margin: 12px auto 0;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.progress-card {
+  margin: 24px 0 16px;
+  padding: 20px;
+  border-radius: 26px;
+  background: #eef6ff;
+  color: var(--blue);
+}
+
+.progress-card strong {
+  display: block;
+  font-size: 52px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.progress-card span {
+  display: block;
+  margin-top: 4px;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.scan-button {
+  height: 72px;
+  border-radius: 24px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--blue), var(--blue-2));
+  font-size: 28px;
+  box-shadow: 0 14px 24px rgba(0, 91, 234, 0.26);
+}
+
+.secondary-button,
+.menu-button {
+  height: 58px;
+  margin-top: 12px;
+  border-radius: 22px;
+  background: #eef6ff;
+  color: var(--blue);
+  font-size: 18px;
+}
+
+.empty-card {
+  min-height: 300px;
+  padding: 24px;
+  border-radius: 34px;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-card img {
+  width: 180px;
+  height: auto;
+}
+
+.empty-card strong {
+  margin-top: 12px;
+  font-size: 20px;
+  color: var(--deep);
 }
 
 .bottom-nav {
@@ -498,4 +733,133 @@ button {
   .start-button span {
     font-size: 32px;
   }
+
+  .page-title h2 {
+    font-size: 38px;
+  }
+
+  .mission-card h2 {
+    font-size: 44px;
+  }
+}
+
+.scanner-card {
+  overflow: hidden;
+  padding: 14px;
+  border-radius: 34px;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+}
+
+#qr-reader {
+  overflow: hidden;
+  border-radius: 24px;
+  background: #071d3b;
+}
+
+#qr-reader video {
+  border-radius: 24px;
+}
+
+#qr-reader__scan_region {
+  border-radius: 24px;
+}
+
+#qr-reader__dashboard_section {
+  display: none;
+}
+
+.scan-message {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 22px;
+  background: #eef6ff;
+  color: var(--blue);
+  text-align: center;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.success-panel {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 24px;
+  background: #eaf8ee;
+  color: #0b8f45;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.success-panel strong {
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.success-panel span {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.achievement-card {
+  min-height: 150px;
+  padding: 18px;
+  border-radius: 30px;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.achievement-card img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+
+.achievement-card strong {
+  margin-top: 8px;
+  color: var(--deep);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.achievement-card span {
+  margin-top: 3px;
+  color: var(--blue);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.dev-button {
+  width: 100%;
+  height: 48px;
+  border: 0;
+  border-radius: 18px;
+  background: #f2f2f2;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.danger-button {
+  width: 100%;
+  height: 58px;
+  margin-top: 12px;
+  border: 0;
+  border-radius: 22px;
+  background: #ffecec;
+  color: #d62828;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
 }
