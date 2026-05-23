@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
-import { Html5Qrcode } from "html5-qrcode";
+import { BrowserQRCodeReader, IScannerControls } from "@zxing/browser";
 import "./App.css";
 
 type Screen = "home" | "map" | "mission" | "scanner" | "achievements" | "menu";
@@ -205,8 +205,9 @@ function App() {
   const [progress, setProgress] = useState<GameProgress>(loadProgress);
   const [scanMessage, setScanMessage] = useState("");
   const [manualCode, setManualCode] = useState("");
-  const scannerRef = useRef<Html5Qrcode | null>(null);
-  const scannerRunningRef = useRef(false);
+
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const controlsRef = useRef<IScannerControls | null>(null);
   const hasScannedRef = useRef(false);
   const hasProcessedUrlRef = useRef(false);
 
@@ -322,77 +323,44 @@ function App() {
     if (screen !== "scanner") return;
 
     hasScannedRef.current = false;
-    scannerRunningRef.current = false;
     setManualCode("");
-    setScanMessage("Acercá el QR completo al recuadro.");
+    setScanMessage("Apuntá la cámara al QR.");
 
-    const scanner = new Html5Qrcode("qr-reader", {
-      verbose: false,
-      formatsToSupport: [0]
-    });
+    const codeReader = new BrowserQRCodeReader();
 
-    scannerRef.current = scanner;
+    if (!videoRef.current) {
+      setScanMessage("No se pudo iniciar la cámara.");
+      return;
+    }
 
-    const qrboxSize = Math.min(
-      330,
-      Math.floor(window.innerWidth * 0.78)
-    );
+    codeReader
+      .decodeFromVideoDevice(undefined, videoRef.current, (result) => {
+        if (!result || hasScannedRef.current) return;
 
-    scanner
-      .start(
-        { facingMode: "environment" },
-        {
-          fps: 15,
-          qrbox: {
-            width: qrboxSize,
-            height: qrboxSize
-          },
-          disableFlip: false
-        },
-        (decodedText) => {
-          if (hasScannedRef.current) return;
+        hasScannedRef.current = true;
+        setScanMessage("QR detectado. Validando...");
 
-          hasScannedRef.current = true;
-          setScanMessage("QR detectado. Validando...");
-          handleScan(decodedText);
-        },
-        () => {}
-      )
-      .then(() => {
-        scannerRunningRef.current = true;
+        controlsRef.current?.stop();
+
+        setTimeout(() => {
+          handleScan(result.getText());
+        }, 150);
+      })
+      .then((controls) => {
+        controlsRef.current = controls;
       })
       .catch(() => {
-        scannerRunningRef.current = false;
         setScanMessage("No se pudo abrir la cámara. Probá ingresar el código.");
       });
 
     return () => {
-      const activeScanner = scannerRef.current;
-
-      if (!activeScanner || !scannerRunningRef.current) {
-        try {
-          activeScanner?.clear();
-        } catch {
-          // nada
-        }
-
-        return;
+      try {
+        controlsRef.current?.stop();
+      } catch {
+        // nada
       }
 
-      scannerRunningRef.current = false;
-
-      activeScanner
-        .stop()
-        .then(() => {
-          activeScanner.clear();
-        })
-        .catch(() => {
-          try {
-            activeScanner.clear();
-          } catch {
-            // nada
-          }
-        });
+      controlsRef.current = null;
     };
   }, [screen]);
 
@@ -587,7 +555,11 @@ function App() {
             </div>
 
             <div className="scanner-card">
-              <div id="qr-reader" />
+              <div className="zxing-reader">
+                <video ref={videoRef} className="scanner-video" muted playsInline />
+                <div className="scanner-frame" />
+              </div>
+
               <div className="scan-message">{scanMessage}</div>
             </div>
 
