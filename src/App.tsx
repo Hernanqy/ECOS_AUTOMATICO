@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
-import QrScanner from "qr-scanner";
+import jsQR from "jsqr";
 import "./App.css";
 
 type Screen = "home" | "map" | "mission" | "scanner" | "achievements" | "menu";
@@ -97,14 +97,7 @@ function extractValidCode(text: string) {
   const upperText = text.trim().toUpperCase();
 
   for (const code of validCodes) {
-    const regex = new RegExp(`(^|[^A-Z0-9])${code}([^A-Z0-9]|$)`);
-    if (regex.test(upperText)) {
-      return code;
-    }
-  }
-
-  for (const code of validCodes) {
-    if (upperText.includes(`ECO=${code}`)) {
+    if (upperText.includes(code)) {
       return code;
     }
   }
@@ -246,7 +239,9 @@ function App() {
   const [manualCode, setManualCode] = useState("");
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const qrScannerRef = useRef<QrScanner | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const animationRef = useRef<number | null>(null);
   const hasScannedRef = useRef(false);
   const hasProcessedUrlRef = useRef(false);
 
@@ -257,6 +252,22 @@ function App() {
   const isExperienceComplete = useMemo(() => {
     return zones.every((zone) => progress.foundCodes[zone.id].length === 3);
   }, [progress]);
+
+  const stopCamera = () => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  };
 
   const handleScan = (value: string) => {
     const scannedCode = getCodeFromQR(value);
@@ -269,7 +280,6 @@ function App() {
       setTimeout(() => {
         hasScannedRef.current = false;
         setScanMessage("Probá con otro QR.");
-        qrScannerRef.current?.start().catch(() => {});
       }, 2800);
 
       return;
@@ -282,7 +292,6 @@ function App() {
       setTimeout(() => {
         hasScannedRef.current = false;
         setScanMessage("Primero completá la zona actual.");
-        qrScannerRef.current?.start().catch(() => {});
       }, 2200);
 
       return;
@@ -361,53 +370,97 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (screen !== "scanner") return;
-
-    hasScannedRef.current = false;
-    setManualCode("");
-    setScanMessage("Apuntá la cámara al QR.");
-
-    if (!videoRef.current) {
-      setScanMessage("No se pudo iniciar la cámara.");
+    if (screen !== "scanner") {
+      stopCamera();
       return;
     }
 
-    const scanner = new QrScanner(
-      videoRef.current,
-      (result) => {
-        if (hasScannedRef.current) return;
+    let isActive = true;
 
-        const text = typeof result === "string" ? result : result.data;
+    const startScanner = async () => {
+      hasScannedRef.current = false;
+      setManualCode("");
+      setScanMessage("Apuntá la cámara al QR.");
 
-        hasScannedRef.current = true;
-        setScanMessage("QR detectado. Validando...");
-        scanner.stop();
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { ideal: "environment" },
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          },
+          audio: false
+        });
 
-        setTimeout(() => {
-          handleScan(text);
-        }, 120);
-      },
-      {
-        preferredCamera: "environment",
-        highlightScanRegion: true,
-        highlightCodeOutline: true,
-        maxScansPerSecond: 12,
-        returnDetailedScanResult: true
-      }
-    );
+        if (!isActive) {
+          stream.getTracks().forEach((track) => track.stop());
+          return;
+        }
 
-    qrScannerRef.current = scanner;
+        streamRef.current = stream;
 
-    scanner
-      .start()
-      .catch(() => {
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+
+        if (!video || !canvas) {
+          setScanMessage("No se pudo iniciar el lector.");
+          return;
+        }
+
+        video.srcObject = stream;
+        video.setAttribute("playsinline", "true");
+        video.muted = true;
+
+        await video.play();
+
+        const scanFrame = () => {
+          if (!isActive || hasScannedRef.current) return;
+
+          const videoWidth = video.videoWidth;
+          const videoHeight = video.videoHeight;
+
+          if (videoWidth > 0 && videoHeight > 0) {
+            canvas.width = videoWidth;
+            canvas.height = videoHeight;
+
+            const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+            if (ctx) {
+              ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
+
+              const imageData = ctx.getImageData(0, 0, videoWidth, videoHeight);
+              const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                inversionAttempts: "attemptBoth"
+              });
+
+              if (code?.data) {
+                hasScannedRef.current = true;
+                setScanMessage("QR detectado. Validando...");
+                stopCamera();
+
+                setTimeout(() => {
+                  handleScan(code.data);
+                }, 150);
+
+                return;
+              }
+            }
+          }
+
+          animationRef.current = requestAnimationFrame(scanFrame);
+        };
+
+        scanFrame();
+      } catch {
         setScanMessage("No se pudo abrir la cámara. Revisá permisos.");
-      });
+      }
+    };
+
+    startScanner();
 
     return () => {
-      scanner.stop();
-      scanner.destroy();
-      qrScannerRef.current = null;
+      isActive = false;
+      stopCamera();
     };
   }, [screen]);
 
@@ -604,6 +657,8 @@ function App() {
             <div className="scanner-card">
               <div className="zxing-reader">
                 <video ref={videoRef} className="scanner-video" muted playsInline />
+                <div className="scanner-frame" />
+                <canvas ref={canvasRef} style={{ display: "none" }} />
               </div>
 
               <div className="scan-message">{scanMessage}</div>
