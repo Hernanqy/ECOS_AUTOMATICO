@@ -107,8 +107,10 @@ function saveProgress(progress: GameProgress) {
 function extractValidCode(text: string) {
   const rawText = String(text || "").trim();
   const upperText = rawText.toUpperCase();
+  const compactText = upperText.replace(/[^A-Z0-9]/g, "");
+  const orderedCodes = [...validCodes].sort((a, b) => b.length - a.length);
 
-  for (const code of validCodes) {
+  for (const code of orderedCodes) {
     if (upperText === code) return code;
   }
 
@@ -121,22 +123,21 @@ function extractValidCode(text: string) {
       url.searchParams.get("QR") ||
       "";
 
-    const normalizedEco = eco.trim().toUpperCase();
+    const compactEco = eco.toUpperCase().replace(/[^A-Z0-9]/g, "");
 
-    if (validCodes.includes(normalizedEco)) {
-      return normalizedEco;
+    for (const code of orderedCodes) {
+      if (compactEco === code || compactEco.includes(code)) {
+        return code;
+      }
     }
   } catch {
-    // No era URL, seguimos analizando como texto.
+    // No era URL.
   }
 
-  const match = upperText.match(/(?:^|[^A-Z0-9])(M1|M2|M3|L1|L2|L3|CO1|CO2|CO3|CA1|CA2|CA3)(?:$|[^A-Z0-9])/);
-
-  if (match) return match[1];
-
-  for (const code of validCodes) {
-    if (upperText.includes(`ECO=${code}`)) return code;
-    if (upperText.includes(`QR=${code}`)) return code;
+  for (const code of orderedCodes) {
+    if (compactText.includes(code)) {
+      return code;
+    }
   }
 
   return "";
@@ -435,7 +436,7 @@ export default function App() {
           { facingMode: "environment" },
           {
             fps: 10,
-            qrbox: { width: 240, height: 240 },
+            qrbox: { width: 250, height: 250 },
             aspectRatio: 1
           },
           async (decodedText: string) => {
@@ -663,7 +664,7 @@ export default function App() {
                 id="qr-reader"
                 style={{
                   width: "100%",
-                  minHeight: "300px",
+                  minHeight: "310px",
                   borderRadius: "22px",
                   overflow: "hidden",
                   background: "#eaf4ff"
