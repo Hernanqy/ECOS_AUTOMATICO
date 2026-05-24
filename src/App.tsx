@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
-import { BrowserQRCodeReader, IScannerControls } from "@zxing/browser";
+import QrScanner from "qr-scanner";
 import "./App.css";
 
 type Screen = "home" | "map" | "mission" | "scanner" | "achievements" | "menu";
@@ -97,7 +97,14 @@ function extractValidCode(text: string) {
   const upperText = text.trim().toUpperCase();
 
   for (const code of validCodes) {
-    if (upperText.includes(code)) {
+    const regex = new RegExp(`(^|[^A-Z0-9])${code}([^A-Z0-9]|$)`);
+    if (regex.test(upperText)) {
+      return code;
+    }
+  }
+
+  for (const code of validCodes) {
+    if (upperText.includes(`ECO=${code}`)) {
       return code;
     }
   }
@@ -118,22 +125,13 @@ function getCodeFromQR(value: string) {
       "";
 
     const codeFromParam = extractValidCode(eco);
-
-    if (codeFromParam) {
-      return codeFromParam;
-    }
+    if (codeFromParam) return codeFromParam;
 
     const codeFromFullUrl = extractValidCode(cleanValue);
-
-    if (codeFromFullUrl) {
-      return codeFromFullUrl;
-    }
+    if (codeFromFullUrl) return codeFromFullUrl;
   } catch {
     const codeFromText = extractValidCode(cleanValue);
-
-    if (codeFromText) {
-      return codeFromText;
-    }
+    if (codeFromText) return codeFromText;
   }
 
   return cleanValue.toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -248,7 +246,7 @@ function App() {
   const [manualCode, setManualCode] = useState("");
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const controlsRef = useRef<IScannerControls | null>(null);
+  const qrScannerRef = useRef<QrScanner | null>(null);
   const hasScannedRef = useRef(false);
   const hasProcessedUrlRef = useRef(false);
 
@@ -271,7 +269,8 @@ function App() {
       setTimeout(() => {
         hasScannedRef.current = false;
         setScanMessage("Probá con otro QR.");
-      }, 3500);
+        qrScannerRef.current?.start().catch(() => {});
+      }, 2800);
 
       return;
     }
@@ -283,7 +282,8 @@ function App() {
       setTimeout(() => {
         hasScannedRef.current = false;
         setScanMessage("Primero completá la zona actual.");
-      }, 1700);
+        qrScannerRef.current?.start().catch(() => {});
+      }, 2200);
 
       return;
     }
@@ -367,41 +367,47 @@ function App() {
     setManualCode("");
     setScanMessage("Apuntá la cámara al QR.");
 
-    const codeReader = new BrowserQRCodeReader();
-
     if (!videoRef.current) {
       setScanMessage("No se pudo iniciar la cámara.");
       return;
     }
 
-    codeReader
-      .decodeFromVideoDevice(undefined, videoRef.current, (result) => {
-        if (!result || hasScannedRef.current) return;
+    const scanner = new QrScanner(
+      videoRef.current,
+      (result) => {
+        if (hasScannedRef.current) return;
+
+        const text = typeof result === "string" ? result : result.data;
 
         hasScannedRef.current = true;
         setScanMessage("QR detectado. Validando...");
-
-        controlsRef.current?.stop();
+        scanner.stop();
 
         setTimeout(() => {
-          handleScan(result.getText());
-        }, 150);
-      })
-      .then((controls) => {
-        controlsRef.current = controls;
-      })
+          handleScan(text);
+        }, 120);
+      },
+      {
+        preferredCamera: "environment",
+        highlightScanRegion: true,
+        highlightCodeOutline: true,
+        maxScansPerSecond: 12,
+        returnDetailedScanResult: true
+      }
+    );
+
+    qrScannerRef.current = scanner;
+
+    scanner
+      .start()
       .catch(() => {
-        setScanMessage("No se pudo abrir la cámara. Probá ingresar el código.");
+        setScanMessage("No se pudo abrir la cámara. Revisá permisos.");
       });
 
     return () => {
-      try {
-        controlsRef.current?.stop();
-      } catch {
-        // nada
-      }
-
-      controlsRef.current = null;
+      scanner.stop();
+      scanner.destroy();
+      qrScannerRef.current = null;
     };
   }, [screen]);
 
@@ -598,14 +604,13 @@ function App() {
             <div className="scanner-card">
               <div className="zxing-reader">
                 <video ref={videoRef} className="scanner-video" muted playsInline />
-                <div className="scanner-frame" />
               </div>
 
               <div className="scan-message">{scanMessage}</div>
             </div>
 
             <div className="manual-card">
-              <span>Si la cámara no lo toma, ingresá el código interno.</span>
+              <span>Respaldo técnico</span>
               <div className="manual-row">
                 <input
                   value={manualCode}
