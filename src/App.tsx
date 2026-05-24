@@ -20,6 +20,8 @@ type GameProgress = {
   foundCodes: Record<ZoneId, string[]>;
 };
 
+type SoundType = "launch" | "found" | "duplicate" | "zone" | "final";
+
 const validCodes = [
   "M1", "M2", "M3",
   "L1", "L2", "L3",
@@ -261,11 +263,16 @@ export default function App() {
   const [progress, setProgress] = useState<GameProgress>(loadProgress);
   const [scanMessage, setScanMessage] = useState("");
   const [manualCode, setManualCode] = useState("");
+  const [scannerSession, setScannerSession] = useState(0);
 
   const scannerRef = useRef<any>(null);
   const scannerRunningRef = useRef(false);
   const qrReadRef = useRef(false);
   const hasProcessedUrlRef = useRef(false);
+
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const audioUnlockedRef = useRef(false);
+  const launchSoundPlayedRef = useRef(false);
 
   const currentZone = zones[progress.currentZoneIndex];
   const currentFound = progress.foundCodes[currentZone.id].length;
@@ -274,6 +281,91 @@ export default function App() {
   const isExperienceComplete = useMemo(() => {
     return zones.every((zone) => progress.foundCodes[zone.id].length === 3);
   }, [progress]);
+
+  function getAudioContext() {
+    if (!audioContextRef.current) {
+      audioContextRef.current = new AudioContext();
+    }
+
+    return audioContextRef.current;
+  }
+
+  function playTone(frequency: number, start: number, duration: number, volume = 0.08, type: OscillatorType = "sine") {
+    const ctx = getAudioContext();
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency, ctx.currentTime + start);
+
+    gain.gain.setValueAtTime(0, ctx.currentTime + start);
+    gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + start + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + duration);
+
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
+
+    oscillator.start(ctx.currentTime + start);
+    oscillator.stop(ctx.currentTime + start + duration + 0.02);
+  }
+
+  async function unlockAudio() {
+    try {
+      const ctx = getAudioContext();
+
+      if (ctx.state === "suspended") {
+        await ctx.resume();
+      }
+
+      audioUnlockedRef.current = true;
+
+      if (!launchSoundPlayedRef.current) {
+        launchSoundPlayedRef.current = true;
+        playSound("launch");
+      }
+    } catch {
+      // El navegador puede bloquear audio hasta la interacción del usuario.
+    }
+  }
+
+  function playSound(type: SoundType) {
+    try {
+      if (!audioUnlockedRef.current && type !== "launch") return;
+
+      if (type === "launch") {
+        playTone(440, 0, 0.12, 0.07, "sine");
+        playTone(660, 0.12, 0.14, 0.07, "sine");
+        playTone(880, 0.26, 0.18, 0.06, "triangle");
+      }
+
+      if (type === "found") {
+        playTone(660, 0, 0.09, 0.08, "triangle");
+        playTone(880, 0.09, 0.12, 0.08, "triangle");
+      }
+
+      if (type === "duplicate") {
+        playTone(240, 0, 0.13, 0.07, "sawtooth");
+        playTone(180, 0.13, 0.16, 0.06, "sawtooth");
+      }
+
+      if (type === "zone") {
+        playTone(523, 0, 0.1, 0.08, "triangle");
+        playTone(659, 0.11, 0.1, 0.08, "triangle");
+        playTone(784, 0.22, 0.16, 0.08, "triangle");
+        playTone(1046, 0.39, 0.24, 0.06, "sine");
+      }
+
+      if (type === "final") {
+        playTone(523, 0, 0.13, 0.08, "triangle");
+        playTone(659, 0.14, 0.13, 0.08, "triangle");
+        playTone(784, 0.28, 0.13, 0.08, "triangle");
+        playTone(1046, 0.43, 0.2, 0.08, "triangle");
+        playTone(1318, 0.66, 0.32, 0.06, "sine");
+      }
+    } catch {
+      // Nada.
+    }
+  }
 
   async function stopScanner() {
     const scanner = scannerRef.current;
@@ -308,6 +400,7 @@ export default function App() {
     const codeZoneIndex = zones.findIndex((zone) => zone.codes.includes(scannedCode));
 
     if (codeZoneIndex === -1) {
+      playSound("duplicate");
       setScreen("scanner");
       setScanMessage(`No reconocido: ${scannedCode}`);
 
@@ -320,6 +413,7 @@ export default function App() {
     }
 
     if (codeZoneIndex > progress.currentZoneIndex) {
+      playSound("duplicate");
       setScreen("scanner");
       setScanMessage("Primero completá la zona actual.");
 
@@ -332,6 +426,7 @@ export default function App() {
     }
 
     if (codeZoneIndex < progress.currentZoneIndex) {
+      playSound("duplicate");
       setScreen("scanner");
       setScanMessage("Ese eco ya pertenece a una zona completada.");
 
@@ -346,6 +441,7 @@ export default function App() {
     const foundInZone = progress.foundCodes[zone.id];
 
     if (foundInZone.includes(scannedCode)) {
+      playSound("duplicate");
       setScreen("scanner");
       setScanMessage("Este eco ya fue encontrado.");
 
@@ -358,6 +454,23 @@ export default function App() {
 
     const newFoundInZone = [...foundInZone, scannedCode];
     const zoneCompleted = newFoundInZone.length === 3;
+
+    const completedAllZones =
+      zone.id === "casona" &&
+      zoneCompleted &&
+      zones.every((item) => {
+        if (item.id === zone.id) return newFoundInZone.length === 3;
+        return progress.foundCodes[item.id].length === 3;
+      });
+
+    if (completedAllZones) {
+      playSound("final");
+    } else if (zoneCompleted) {
+      playSound("zone");
+    } else {
+      playSound("found");
+    }
+
     const nextZoneIndex = zoneCompleted
       ? Math.min(progress.currentZoneIndex + 1, zones.length - 1)
       : progress.currentZoneIndex;
@@ -373,7 +486,9 @@ export default function App() {
     setProgress(newProgress);
     setScreen("scanner");
 
-    if (zoneCompleted) {
+    if (completedAllZones) {
+      setScanMessage("¡Completaron Ecos de La Máxima!");
+    } else if (zoneCompleted) {
       setScanMessage(zone.success);
     } else {
       setScanMessage(`¡Eco encontrado! ${newFoundInZone.length}/3`);
@@ -381,12 +496,28 @@ export default function App() {
 
     setTimeout(() => {
       setScreen(zoneCompleted ? "map" : "mission");
-    }, 1900);
+    }, completedAllZones ? 2600 : 1900);
   };
 
   useEffect(() => {
     saveProgress(progress);
   }, [progress]);
+
+  useEffect(() => {
+    const activateAudio = () => {
+      unlockAudio();
+    };
+
+    window.addEventListener("pointerdown", activateAudio, { once: true });
+    window.addEventListener("touchstart", activateAudio, { once: true });
+    window.addEventListener("click", activateAudio, { once: true });
+
+    return () => {
+      window.removeEventListener("pointerdown", activateAudio);
+      window.removeEventListener("touchstart", activateAudio);
+      window.removeEventListener("click", activateAudio);
+    };
+  }, []);
 
   useEffect(() => {
     if (hasProcessedUrlRef.current) return;
@@ -417,7 +548,7 @@ export default function App() {
       setManualCode("");
       setScanMessage("Apuntá la cámara al QR.");
 
-      const readerId = "qr-reader";
+      const readerId = `qr-reader-${scannerSession}`;
       const readerElement = document.getElementById(readerId);
 
       if (!readerElement) return;
@@ -466,12 +597,32 @@ export default function App() {
       cancelled = true;
       stopScanner();
     };
-  }, [screen, progress.currentZoneIndex]);
+  }, [screen, progress.currentZoneIndex, scannerSession]);
 
-  const goToHome = () => setScreen("home");
-  const goToMap = () => setScreen("map");
-  const goToMission = () => setScreen("mission");
-  const goToScanner = () => setScreen("scanner");
+  const goToHome = () => {
+    unlockAudio();
+    setScreen("home");
+  };
+
+  const goToMap = () => {
+    unlockAudio();
+    setScreen("map");
+  };
+
+  const goToMission = () => {
+    unlockAudio();
+    setScreen("mission");
+  };
+
+  const goToScanner = async () => {
+    await unlockAudio();
+    await stopScanner();
+    qrReadRef.current = false;
+    scannerRunningRef.current = false;
+    scannerRef.current = null;
+    setScannerSession((value) => value + 1);
+    setScreen("scanner");
+  };
 
   const resetGame = () => {
     stopScanner();
@@ -575,6 +726,7 @@ export default function App() {
                     disabled={isLocked}
                     onClick={() => {
                       if (!isLocked) {
+                        unlockAudio();
                         setProgress({ ...progress, currentZoneIndex: index });
                         setScreen("mission");
                       }
@@ -661,7 +813,8 @@ export default function App() {
 
             <div className="scanner-card">
               <div
-                id="qr-reader"
+                id={`qr-reader-${scannerSession}`}
+                key={`qr-reader-${scannerSession}`}
                 style={{
                   width: "100%",
                   minHeight: "310px",
@@ -744,12 +897,18 @@ export default function App() {
             <NavIcon type="eco" />
           </button>
 
-          <button className={`nav-item ${screen === "achievements" ? "active" : ""}`} onClick={() => setScreen("achievements")}>
+          <button className={`nav-item ${screen === "achievements" ? "active" : ""}`} onClick={() => {
+            unlockAudio();
+            setScreen("achievements");
+          }}>
             <NavIcon type="logros" />
             <span>Logros</span>
           </button>
 
-          <button className={`nav-item ${screen === "menu" ? "active" : ""}`} onClick={() => setScreen("menu")}>
+          <button className={`nav-item ${screen === "menu" ? "active" : ""}`} onClick={() => {
+            unlockAudio();
+            setScreen("menu");
+          }}>
             <NavIcon type="menu" />
             <span>Menú</span>
           </button>
