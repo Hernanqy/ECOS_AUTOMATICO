@@ -1,5 +1,4 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
-import jsQR from "jsqr";
 import "./App.css";
 
 type Screen = "home" | "map" | "mission" | "scanner" | "achievements" | "menu";
@@ -83,7 +82,19 @@ function loadProgress(): GameProgress {
   if (!saved) return initialProgress;
 
   try {
-    return JSON.parse(saved) as GameProgress;
+    const parsed = JSON.parse(saved) as GameProgress;
+
+    if (!parsed.foundCodes) return initialProgress;
+
+    return {
+      currentZoneIndex: parsed.currentZoneIndex ?? 0,
+      foundCodes: {
+        museo: parsed.foundCodes.museo ?? [],
+        lago: parsed.foundCodes.lago ?? [],
+        condorera: parsed.foundCodes.condorera ?? [],
+        casona: parsed.foundCodes.casona ?? []
+      }
+    };
   } catch {
     return initialProgress;
   }
@@ -94,22 +105,15 @@ function saveProgress(progress: GameProgress) {
 }
 
 function extractValidCode(text: string) {
-  const upperText = text.trim().toUpperCase();
+  const rawText = String(text || "").trim();
+  const upperText = rawText.toUpperCase();
 
   for (const code of validCodes) {
-    if (upperText.includes(code)) {
-      return code;
-    }
+    if (upperText === code) return code;
   }
 
-  return "";
-}
-
-function getCodeFromQR(value: string) {
-  const cleanValue = value.trim();
-
   try {
-    const url = new URL(cleanValue);
+    const url = new URL(rawText);
     const eco =
       url.searchParams.get("eco") ||
       url.searchParams.get("ECO") ||
@@ -117,17 +121,36 @@ function getCodeFromQR(value: string) {
       url.searchParams.get("QR") ||
       "";
 
-    const codeFromParam = extractValidCode(eco);
-    if (codeFromParam) return codeFromParam;
+    const normalizedEco = eco.trim().toUpperCase();
 
-    const codeFromFullUrl = extractValidCode(cleanValue);
-    if (codeFromFullUrl) return codeFromFullUrl;
+    if (validCodes.includes(normalizedEco)) {
+      return normalizedEco;
+    }
   } catch {
-    const codeFromText = extractValidCode(cleanValue);
-    if (codeFromText) return codeFromText;
+    // No era URL, seguimos analizando como texto.
   }
 
-  return cleanValue.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const match = upperText.match(/(?:^|[^A-Z0-9])(M1|M2|M3|L1|L2|L3|CO1|CO2|CO3|CA1|CA2|CA3)(?:$|[^A-Z0-9])/);
+
+  if (match) return match[1];
+
+  for (const code of validCodes) {
+    if (upperText.includes(`ECO=${code}`)) return code;
+    if (upperText.includes(`QR=${code}`)) return code;
+  }
+
+  return "";
+}
+
+function getCodeFromQR(value: string) {
+  const code = extractValidCode(value);
+
+  if (code) return code;
+
+  return String(value || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "");
 }
 
 function getInitialQRFromUrl() {
@@ -232,17 +255,15 @@ function BackgroundLines() {
   );
 }
 
-function App() {
+export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
   const [progress, setProgress] = useState<GameProgress>(loadProgress);
   const [scanMessage, setScanMessage] = useState("");
   const [manualCode, setManualCode] = useState("");
 
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const animationRef = useRef<number | null>(null);
-  const hasScannedRef = useRef(false);
+  const scannerRef = useRef<any>(null);
+  const scannerRunningRef = useRef(false);
+  const qrReadRef = useRef(false);
   const hasProcessedUrlRef = useRef(false);
 
   const currentZone = zones[progress.currentZoneIndex];
@@ -253,21 +274,33 @@ function App() {
     return zones.every((zone) => progress.foundCodes[zone.id].length === 3);
   }, [progress]);
 
-  const stopCamera = () => {
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-      animationRef.current = null;
+  async function stopScanner() {
+    const scanner = scannerRef.current;
+
+    if (!scanner) {
+      scannerRunningRef.current = false;
+      qrReadRef.current = false;
+      return;
     }
 
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
+    try {
+      if (scannerRunningRef.current) {
+        await scanner.stop();
+      }
+    } catch {
+      // Nada.
     }
 
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
+    try {
+      await scanner.clear();
+    } catch {
+      // Nada.
     }
-  };
+
+    scannerRef.current = null;
+    scannerRunningRef.current = false;
+    qrReadRef.current = false;
+  }
 
   const handleScan = (value: string) => {
     const scannedCode = getCodeFromQR(value);
@@ -278,20 +311,20 @@ function App() {
       setScanMessage(`No reconocido: ${scannedCode}`);
 
       setTimeout(() => {
-        hasScannedRef.current = false;
+        qrReadRef.current = false;
         setScanMessage("Probá con otro QR.");
-      }, 2800);
+      }, 2500);
 
       return;
     }
 
     if (codeZoneIndex > progress.currentZoneIndex) {
       setScreen("scanner");
-      setScanMessage("Todavía no llegaste a esta zona.");
+      setScanMessage("Primero completá la zona actual.");
 
       setTimeout(() => {
-        hasScannedRef.current = false;
-        setScanMessage("Primero completá la zona actual.");
+        qrReadRef.current = false;
+        setScanMessage("Apuntá la cámara al QR.");
       }, 2200);
 
       return;
@@ -370,99 +403,69 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (screen !== "scanner") {
-      stopCamera();
-      return;
-    }
+    let cancelled = false;
 
-    let isActive = true;
+    async function startScanner() {
+      if (screen !== "scanner") {
+        await stopScanner();
+        return;
+      }
 
-    const startScanner = async () => {
-      hasScannedRef.current = false;
+      if (scannerRunningRef.current || scannerRef.current) return;
+
       setManualCode("");
       setScanMessage("Apuntá la cámara al QR.");
 
+      const readerId = "qr-reader";
+      const readerElement = document.getElementById(readerId);
+
+      if (!readerElement) return;
+
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: { ideal: "environment" },
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
+        const { Html5Qrcode } = await import("html5-qrcode");
+
+        if (cancelled) return;
+
+        const scanner = new Html5Qrcode(readerId);
+
+        scannerRef.current = scanner;
+        qrReadRef.current = false;
+
+        await scanner.start(
+          { facingMode: "environment" },
+          {
+            fps: 10,
+            qrbox: { width: 240, height: 240 },
+            aspectRatio: 1
           },
-          audio: false
-        });
+          async (decodedText: string) => {
+            if (qrReadRef.current) return;
 
-        if (!isActive) {
-          stream.getTracks().forEach((track) => track.stop());
-          return;
-        }
+            qrReadRef.current = true;
+            setScanMessage("QR detectado. Validando...");
 
-        streamRef.current = stream;
+            await stopScanner();
+            handleScan(decodedText);
+          },
+          () => {}
+        );
 
-        const video = videoRef.current;
-        const canvas = canvasRef.current;
-
-        if (!video || !canvas) {
-          setScanMessage("No se pudo iniciar el lector.");
-          return;
-        }
-
-        video.srcObject = stream;
-        video.setAttribute("playsinline", "true");
-        video.muted = true;
-
-        await video.play();
-
-        const scanFrame = () => {
-          if (!isActive || hasScannedRef.current) return;
-
-          const videoWidth = video.videoWidth;
-          const videoHeight = video.videoHeight;
-
-          if (videoWidth > 0 && videoHeight > 0) {
-            canvas.width = videoWidth;
-            canvas.height = videoHeight;
-
-            const ctx = canvas.getContext("2d", { willReadFrequently: true });
-
-            if (ctx) {
-              ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
-
-              const imageData = ctx.getImageData(0, 0, videoWidth, videoHeight);
-              const code = jsQR(imageData.data, imageData.width, imageData.height, {
-                inversionAttempts: "attemptBoth"
-              });
-
-              if (code?.data) {
-                hasScannedRef.current = true;
-                setScanMessage("QR detectado. Validando...");
-                stopCamera();
-
-                setTimeout(() => {
-                  handleScan(code.data);
-                }, 150);
-
-                return;
-              }
-            }
-          }
-
-          animationRef.current = requestAnimationFrame(scanFrame);
-        };
-
-        scanFrame();
+        scannerRunningRef.current = true;
       } catch {
-        setScanMessage("No se pudo abrir la cámara. Revisá permisos.");
+        setScanMessage("No se pudo abrir la cámara.");
+        scannerRef.current = null;
+        scannerRunningRef.current = false;
+        qrReadRef.current = false;
       }
-    };
+    }
 
     startScanner();
 
     return () => {
-      isActive = false;
-      stopCamera();
+      cancelled = true;
+      stopScanner();
     };
-  }, [screen]);
+  }, [screen, progress.currentZoneIndex]);
 
   const goToHome = () => setScreen("home");
   const goToMap = () => setScreen("map");
@@ -470,6 +473,7 @@ function App() {
   const goToScanner = () => setScreen("scanner");
 
   const resetGame = () => {
+    stopScanner();
     localStorage.removeItem("ecos_progress");
     setProgress(initialProgress);
     setScreen("home");
@@ -655,12 +659,16 @@ function App() {
             </div>
 
             <div className="scanner-card">
-              <div className="zxing-reader">
-                <video ref={videoRef} className="scanner-video" muted playsInline />
-                <div className="scanner-frame" />
-                <canvas ref={canvasRef} style={{ display: "none" }} />
-              </div>
-
+              <div
+                id="qr-reader"
+                style={{
+                  width: "100%",
+                  minHeight: "300px",
+                  borderRadius: "22px",
+                  overflow: "hidden",
+                  background: "#eaf4ff"
+                }}
+              />
               <div className="scan-message">{scanMessage}</div>
             </div>
 
@@ -749,5 +757,3 @@ function App() {
     </main>
   );
 }
-
-export default App;
