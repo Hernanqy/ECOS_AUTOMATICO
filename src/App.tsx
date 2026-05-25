@@ -22,6 +22,8 @@ type GameProgress = {
 
 type SoundType = "launch" | "found" | "duplicate" | "zone" | "final";
 
+const STORAGE_KEY = "ecos_progress_v2";
+
 const zones: Zone[] = [
   {
     id: "museo",
@@ -73,8 +75,35 @@ const initialProgress: GameProgress = {
   }
 };
 
+function cleanProgress(progress: GameProgress): GameProgress {
+  const foundCodes = {
+    museo: (progress.foundCodes.museo ?? []).filter((code) => zones[0].codes.includes(code)),
+    lago: (progress.foundCodes.lago ?? []).filter((code) => zones[1].codes.includes(code)),
+    condorera: (progress.foundCodes.condorera ?? []).filter((code) => zones[2].codes.includes(code)),
+    casona: (progress.foundCodes.casona ?? []).filter((code) => zones[3].codes.includes(code))
+  };
+
+  let currentZoneIndex = 0;
+
+  for (let index = 0; index < zones.length; index++) {
+    const zone = zones[index];
+
+    if (foundCodes[zone.id].length < zone.codes.length) {
+      currentZoneIndex = index;
+      break;
+    }
+
+    currentZoneIndex = Math.min(index + 1, zones.length - 1);
+  }
+
+  return {
+    currentZoneIndex,
+    foundCodes
+  };
+}
+
 function loadProgress(): GameProgress {
-  const saved = localStorage.getItem("ecos_progress");
+  const saved = localStorage.getItem(STORAGE_KEY);
 
   if (!saved) return initialProgress;
 
@@ -83,7 +112,7 @@ function loadProgress(): GameProgress {
 
     if (!parsed.foundCodes) return initialProgress;
 
-    return {
+    return cleanProgress({
       currentZoneIndex: parsed.currentZoneIndex ?? 0,
       foundCodes: {
         museo: parsed.foundCodes.museo ?? [],
@@ -91,14 +120,20 @@ function loadProgress(): GameProgress {
         condorera: parsed.foundCodes.condorera ?? [],
         casona: parsed.foundCodes.casona ?? []
       }
-    };
+    });
   } catch {
     return initialProgress;
   }
 }
 
 function saveProgress(progress: GameProgress) {
-  localStorage.setItem("ecos_progress", JSON.stringify(progress));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+}
+
+function resetStoredProgress() {
+  localStorage.removeItem("ecos_progress");
+  localStorage.removeItem("ecos_progress_v1");
+  localStorage.removeItem(STORAGE_KEY);
 }
 
 function extractValidCode(text: string) {
@@ -149,6 +184,11 @@ function getCodeFromQR(value: string) {
     .trim()
     .toUpperCase()
     .replace(/[^A-Z0-9]/g, "");
+}
+
+function shouldResetFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("reset") === "1";
 }
 
 function getInitialQRFromUrl() {
@@ -442,19 +482,6 @@ export default function App() {
       return;
     }
 
-    if (codeZoneIndex < progress.currentZoneIndex) {
-      playSound("duplicate");
-      setScreen("scanner");
-      setScanMessage("Ese eco ya pertenece a una zona completada.");
-
-      transitionTimeoutRef.current = window.setTimeout(() => {
-        transitionTimeoutRef.current = null;
-        setScreen("map");
-      }, 1700);
-
-      return;
-    }
-
     const zone = zones[codeZoneIndex];
     const foundInZone = progress.foundCodes[zone.id];
 
@@ -466,6 +493,19 @@ export default function App() {
       transitionTimeoutRef.current = window.setTimeout(() => {
         transitionTimeoutRef.current = null;
         setScreen("mission");
+      }, 1700);
+
+      return;
+    }
+
+    if (codeZoneIndex < progress.currentZoneIndex) {
+      playSound("duplicate");
+      setScreen("scanner");
+      setScanMessage("Ese eco ya pertenece a una zona completada.");
+
+      transitionTimeoutRef.current = window.setTimeout(() => {
+        transitionTimeoutRef.current = null;
+        setScreen("map");
       }, 1700);
 
       return;
@@ -549,6 +589,15 @@ export default function App() {
 
   useEffect(() => {
     if (hasProcessedUrlRef.current) return;
+
+    if (shouldResetFromUrl()) {
+      resetStoredProgress();
+      setCompletedZoneForMap(null);
+      setProgress(initialProgress);
+      hasProcessedUrlRef.current = true;
+      clearUrlParams();
+      return;
+    }
 
     const initialCode = getInitialQRFromUrl();
 
@@ -672,7 +721,7 @@ export default function App() {
   const resetGame = () => {
     clearTransitionTimeout();
     stopScanner();
-    localStorage.removeItem("ecos_progress");
+    resetStoredProgress();
     setCompletedZoneForMap(null);
     setProgress(initialProgress);
     setScreen("home");
