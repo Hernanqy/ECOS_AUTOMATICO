@@ -520,14 +520,6 @@ export default function App() {
   const completedLabel = zones[orientationZoneIndex]?.label ?? "Recorrido";
   const nextLabel = zones[orientationZoneIndex + 1]?.label ?? "Final";
 
-  const activeMapIndex = isExperienceComplete
-    ? 3
-    : safeProgress.currentZoneIndex === 0
-      ? 0
-      : safeProgress.currentZoneIndex === 1
-        ? 1
-        : 2;
-
   function clearTransitionTimeout() {
     if (transitionTimeoutRef.current !== null) {
       window.clearTimeout(transitionTimeoutRef.current);
@@ -1425,6 +1417,7 @@ export default function App() {
     </main>
   );
 }
+
 
 
 
