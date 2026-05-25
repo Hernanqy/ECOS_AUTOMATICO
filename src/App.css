@@ -3581,3 +3581,69 @@ button {
   }
 }
 
+
+/* =========================================================
+   QUITAR GLOBO DEL PERSONAJE EN HOME
+   ========================================================= */
+
+.speech-bubble {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  width: min(56vw, 260px) !important;
+  max-width: 260px !important;
+  left: 20px !important;
+  bottom: 58px !important;
+  gap: 6px !important;
+}
+
+.speech-bubble::after,
+.speech-bubble::before {
+  display: none !important;
+  content: none !important;
+}
+
+.speech-bubble strong {
+  color: #0b63e5 !important;
+  font-size: clamp(24px, 5.5vw, 32px) !important;
+  font-weight: 1000 !important;
+  line-height: 1 !important;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+.speech-bubble span {
+  color: #12315f !important;
+  font-size: clamp(15px, 4vw, 19px) !important;
+  font-weight: 950 !important;
+  line-height: 1.14 !important;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+@media (max-height: 760px) {
+  .speech-bubble {
+    left: 18px !important;
+    bottom: 52px !important;
+    width: min(55vw, 235px) !important;
+    max-width: 235px !important;
+  }
+
+  .speech-bubble strong {
+    font-size: 23px !important;
+  }
+
+  .speech-bubble span {
+    font-size: 14px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .speech-bubble {
+    left: 16px !important;
+    bottom: 50px !important;
+    width: min(58vw, 225px) !important;
+    max-width: 225px !important;
+  }
+}
+
