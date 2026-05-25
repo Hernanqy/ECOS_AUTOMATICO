@@ -1801,3 +1801,200 @@ button {
   }
 }
 
+
+/* =========================================================
+   AJUSTE FINAL HOME + ESPACIADO GLOBAL
+   ========================================================= */
+
+/* Más aire útil en toda la app */
+.page-section {
+  padding-top: 22px !important;
+}
+
+/* Home más compacto */
+.hero-section {
+  padding-top: 26px !important;
+  padding-bottom: 0 !important;
+}
+
+/* Acerca personaje y recorrido */
+.guide-wrap {
+  margin-top: 0 !important;
+  min-height: 245px !important;
+}
+
+.guide-character {
+  width: min(63vw, 285px) !important;
+  max-height: 300px !important;
+  transform: translateX(36px) translateY(-4px) !important;
+}
+
+/* Globo con texto nuevo, más amplio */
+.speech-bubble {
+  left: 18px !important;
+  bottom: 34px !important;
+  max-width: 285px !important;
+  padding: 16px 20px !important;
+  border-radius: 26px !important;
+}
+
+.speech-bubble strong {
+  font-size: 23px !important;
+  line-height: 1 !important;
+}
+
+.speech-bubble span {
+  font-size: 19px !important;
+  line-height: 1.12 !important;
+}
+
+/* Acercar recorrido al personaje */
+.route-card {
+  margin-top: -22px !important;
+  margin-left: 24px !important;
+  margin-right: 24px !important;
+  margin-bottom: 112px !important;
+  padding: 10px 12px 14px !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+/* Que el recorrido no parezca encajonado */
+.route-path {
+  opacity: 0.9 !important;
+}
+
+.route-grid {
+  gap: 4px !important;
+}
+
+.route-item {
+  min-width: 0 !important;
+}
+
+.zone-icon {
+  width: 48px !important;
+  height: 48px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.zone-icon img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+.route-dot {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+.route-item strong {
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+
+/* Botón comenzar más chico */
+.start-button {
+  min-height: 54px !important;
+  margin-top: 12px !important;
+  border-radius: 24px !important;
+  font-size: 20px !important;
+  padding: 10px 20px !important;
+}
+
+.start-button svg {
+  width: 34px !important;
+  height: 34px !important;
+}
+
+/* Botones compactos en toda la app */
+.start-button.compact,
+.scan-button,
+.secondary-button,
+.menu-button,
+.danger-button {
+  min-height: 52px !important;
+  border-radius: 22px !important;
+}
+
+/* Ajuste global de tarjetas para que no se sientan tan pesadas */
+.mission-card,
+.question-card,
+.orientation-map-card,
+.reward-card,
+.scanner-card,
+.manual-card {
+  border-radius: 26px !important;
+}
+
+/* Mobile bajo */
+@media (max-height: 760px) {
+  .hero-section {
+    padding-top: 18px !important;
+  }
+
+  .guide-wrap {
+    min-height: 220px !important;
+  }
+
+  .guide-character {
+    width: min(60vw, 260px) !important;
+    max-height: 260px !important;
+    transform: translateX(34px) translateY(-6px) !important;
+  }
+
+  .speech-bubble {
+    bottom: 28px !important;
+    max-width: 265px !important;
+    padding: 14px 18px !important;
+  }
+
+  .speech-bubble strong {
+    font-size: 21px !important;
+  }
+
+  .speech-bubble span {
+    font-size: 17px !important;
+  }
+
+  .route-card {
+    margin-top: -26px !important;
+    margin-bottom: 104px !important;
+  }
+
+  .zone-icon {
+    width: 43px !important;
+    height: 43px !important;
+  }
+
+  .route-item strong {
+    font-size: 11px !important;
+  }
+
+  .start-button {
+    min-height: 50px !important;
+    font-size: 18px !important;
+    border-radius: 22px !important;
+  }
+}
+
+/* Mobile angosto */
+@media (max-width: 390px) {
+  .route-card {
+    margin-left: 18px !important;
+    margin-right: 18px !important;
+  }
+
+  .speech-bubble {
+    max-width: 255px !important;
+  }
+
+  .guide-character {
+    width: 62vw !important;
+  }
+}
+
