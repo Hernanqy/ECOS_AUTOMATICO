@@ -84,11 +84,11 @@ const questions: Record<string, EcoQuestion> = {
     title: "Eco de la megafauna",
     question: "¿Qué nos ayudan a conocer los fósiles?",
     options: [
-      { id: "A", text: "Animales que vivieron en el pasado" },
-      { id: "B", text: "Autos antiguos" },
+      { id: "A", text: "Autos antiguos" },
+      { id: "B", text: "Animales que vivieron en el pasado" },
       { id: "C", text: "Planetas lejanos" }
     ],
-    correctOptionId: "A",
+    correctOptionId: "B",
     successText: "¡Correcto! Los fósiles guardan pistas del pasado.",
     errorText: "Casi. Mirá la sala y probá otra vez."
   },
@@ -97,11 +97,11 @@ const questions: Record<string, EcoQuestion> = {
     title: "Eco de la ciencia",
     question: "¿Qué hace una científica cuando encuentra una pista?",
     options: [
-      { id: "A", text: "La observa e investiga" },
-      { id: "B", text: "La esconde" },
-      { id: "C", text: "La ignora" }
+      { id: "A", text: "La esconde" },
+      { id: "B", text: "La ignora" },
+      { id: "C", text: "La observa e investiga" }
     ],
-    correctOptionId: "A",
+    correctOptionId: "C",
     successText: "¡Muy bien! Observar es el primer paso para descubrir.",
     errorText: "Probá otra vez. Pensá cómo trabaja la ciencia."
   },
@@ -111,8 +111,8 @@ const questions: Record<string, EcoQuestion> = {
     question: "¿Qué animal suele vivir cerca del agua y la vegetación?",
     options: [
       { id: "A", text: "Carpincho" },
-      { id: "B", text: "Pingüino" },
-      { id: "C", text: "Camello" }
+      { id: "B", text: "Camello" },
+      { id: "C", text: "Pingüino" }
     ],
     correctOptionId: "A",
     successText: "¡Correcto! El carpincho es parte de estos ambientes.",
@@ -123,11 +123,11 @@ const questions: Record<string, EcoQuestion> = {
     title: "Eco de las aves",
     question: "¿Qué hacen muchas aves en los árboles del entorno?",
     options: [
-      { id: "A", text: "Buscan refugio, alimento o descanso" },
-      { id: "B", text: "Construyen autos" },
+      { id: "A", text: "Construyen autos" },
+      { id: "B", text: "Buscan refugio, alimento o descanso" },
       { id: "C", text: "Viven bajo tierra siempre" }
     ],
-    correctOptionId: "A",
+    correctOptionId: "B",
     successText: "¡Excelente! Los árboles son refugio para muchas aves.",
     errorText: "Probá otra vez. Observá el entorno del lago."
   },
@@ -136,11 +136,11 @@ const questions: Record<string, EcoQuestion> = {
     title: "Eco del cóndor",
     question: "¿Qué ave representa la altura y los vuelos planeados?",
     options: [
-      { id: "A", text: "Cóndor andino" },
-      { id: "B", text: "Gallina" },
-      { id: "C", text: "Pato doméstico" }
+      { id: "A", text: "Gallina" },
+      { id: "B", text: "Pato doméstico" },
+      { id: "C", text: "Cóndor andino" }
     ],
-    correctOptionId: "A",
+    correctOptionId: "C",
     successText: "¡Correcto! Olavarría, tierra de cóndores.",
     errorText: "Casi. Pensá en el ave protagonista de esta zona."
   },
@@ -162,11 +162,11 @@ const questions: Record<string, EcoQuestion> = {
     title: "Eco de la casona",
     question: "¿Qué guarda un edificio antiguo como la Casona?",
     options: [
-      { id: "A", text: "Historias y memorias del lugar" },
-      { id: "B", text: "Naves espaciales" },
+      { id: "A", text: "Naves espaciales" },
+      { id: "B", text: "Historias y memorias del lugar" },
       { id: "C", text: "Solo cosas nuevas" }
     ],
-    correctOptionId: "A",
+    correctOptionId: "B",
     successText: "¡Correcto! La Casona también guarda memoria.",
     errorText: "Casi. Pensá en el paso del tiempo."
   },
@@ -175,11 +175,11 @@ const questions: Record<string, EcoQuestion> = {
     title: "Eco del recorrido",
     question: "¿Qué hiciste durante toda la experiencia?",
     options: [
-      { id: "A", text: "Exploré, observé y descubrí ecos" },
+      { id: "A", text: "Ignoré las pistas" },
       { id: "B", text: "Me quedé quieto sin mirar" },
-      { id: "C", text: "Ignoré las pistas" }
+      { id: "C", text: "Exploré, observé y descubrí ecos" }
     ],
-    correctOptionId: "A",
+    correctOptionId: "C",
     successText: "¡Excelente! Completaste el recorrido con atención.",
     errorText: "Probá otra vez. Pensá en todo lo que hiciste en la aventura."
   }
