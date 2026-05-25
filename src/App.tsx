@@ -272,6 +272,7 @@ export default function App() {
   const scannerRunningRef = useRef(false);
   const qrReadRef = useRef(false);
   const hasProcessedUrlRef = useRef(false);
+  const transitionTimeoutRef = useRef<number | null>(null);
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioUnlockedRef = useRef(false);
@@ -286,6 +287,13 @@ export default function App() {
   const isExperienceComplete = useMemo(() => {
     return zones.every((zone) => progress.foundCodes[zone.id].length === zone.codes.length);
   }, [progress]);
+
+  function clearTransitionTimeout() {
+    if (transitionTimeoutRef.current !== null) {
+      window.clearTimeout(transitionTimeoutRef.current);
+      transitionTimeoutRef.current = null;
+    }
+  }
 
   function getAudioContext() {
     if (!audioContextRef.current) {
@@ -401,6 +409,8 @@ export default function App() {
   }
 
   const handleScan = (value: string) => {
+    clearTransitionTimeout();
+
     const scannedCode = getCodeFromQR(value);
     const codeZoneIndex = zones.findIndex((zone) => zone.codes.includes(scannedCode));
 
@@ -409,7 +419,8 @@ export default function App() {
       setScreen("scanner");
       setScanMessage(`No reconocido: ${scannedCode}`);
 
-      setTimeout(() => {
+      transitionTimeoutRef.current = window.setTimeout(() => {
+        transitionTimeoutRef.current = null;
         qrReadRef.current = false;
         setScanMessage("Probá con otro QR.");
       }, 2500);
@@ -422,7 +433,8 @@ export default function App() {
       setScreen("scanner");
       setScanMessage("Primero completá la zona actual.");
 
-      setTimeout(() => {
+      transitionTimeoutRef.current = window.setTimeout(() => {
+        transitionTimeoutRef.current = null;
         qrReadRef.current = false;
         setScanMessage("Apuntá la cámara al QR.");
       }, 2200);
@@ -435,7 +447,8 @@ export default function App() {
       setScreen("scanner");
       setScanMessage("Ese eco ya pertenece a una zona completada.");
 
-      setTimeout(() => {
+      transitionTimeoutRef.current = window.setTimeout(() => {
+        transitionTimeoutRef.current = null;
         setScreen("map");
       }, 1700);
 
@@ -450,7 +463,8 @@ export default function App() {
       setScreen("scanner");
       setScanMessage("Este eco ya fue encontrado.");
 
-      setTimeout(() => {
+      transitionTimeoutRef.current = window.setTimeout(() => {
+        transitionTimeoutRef.current = null;
         setScreen("mission");
       }, 1700);
 
@@ -494,17 +508,23 @@ export default function App() {
       setScanMessage(`¡Eco encontrado! ${newFoundInZone.length}/${zone.codes.length}`);
     }
 
-    setTimeout(() => {
+    transitionTimeoutRef.current = window.setTimeout(() => {
+      transitionTimeoutRef.current = null;
+
       if (completedAllZones) {
         setCompletedZoneForMap(3);
         setScreen("orientation");
-      } else if (zoneCompleted) {
+        return;
+      }
+
+      if (zoneCompleted) {
         setCompletedZoneForMap(codeZoneIndex);
         setScreen("orientation");
-      } else {
-        setScreen("mission");
+        return;
       }
-    }, completedAllZones ? 2300 : 1700);
+
+      setScreen("mission");
+    }, zoneCompleted ? 2500 : 1500);
   };
 
   useEffect(() => {
@@ -536,7 +556,8 @@ export default function App() {
 
     hasProcessedUrlRef.current = true;
 
-    setTimeout(() => {
+    transitionTimeoutRef.current = window.setTimeout(() => {
+      transitionTimeoutRef.current = null;
       handleScan(initialCode);
       clearUrlParams();
     }, 300);
@@ -608,21 +629,25 @@ export default function App() {
   }, [screen, progress.currentZoneIndex, scannerSession]);
 
   const goToHome = () => {
+    clearTransitionTimeout();
     unlockAudio();
     setScreen("home");
   };
 
   const goToMap = () => {
+    clearTransitionTimeout();
     unlockAudio();
     setScreen("map");
   };
 
   const goToMission = () => {
+    clearTransitionTimeout();
     unlockAudio();
     setScreen("mission");
   };
 
   const goToScanner = async () => {
+    clearTransitionTimeout();
     await unlockAudio();
     await stopScanner();
     qrReadRef.current = false;
@@ -633,6 +658,7 @@ export default function App() {
   };
 
   const goFromOrientation = () => {
+    clearTransitionTimeout();
     unlockAudio();
 
     if (isExperienceComplete) {
@@ -644,6 +670,7 @@ export default function App() {
   };
 
   const resetGame = () => {
+    clearTransitionTimeout();
     stopScanner();
     localStorage.removeItem("ecos_progress");
     setCompletedZoneForMap(null);
@@ -751,6 +778,7 @@ export default function App() {
                     disabled={isLocked}
                     onClick={() => {
                       if (!isLocked) {
+                        clearTransitionTimeout();
                         unlockAudio();
                         setProgress({ ...progress, currentZoneIndex: index });
                         setScreen("mission");
@@ -944,18 +972,26 @@ export default function App() {
             <NavIcon type="eco" />
           </button>
 
-          <button className={`nav-item ${screen === "achievements" ? "active" : ""}`} onClick={() => {
-            unlockAudio();
-            setScreen("achievements");
-          }}>
+          <button
+            className={`nav-item ${screen === "achievements" ? "active" : ""}`}
+            onClick={() => {
+              clearTransitionTimeout();
+              unlockAudio();
+              setScreen("achievements");
+            }}
+          >
             <NavIcon type="logros" />
             <span>Logros</span>
           </button>
 
-          <button className={`nav-item ${screen === "menu" ? "active" : ""}`} onClick={() => {
-            unlockAudio();
-            setScreen("menu");
-          }}>
+          <button
+            className={`nav-item ${screen === "menu" ? "active" : ""}`}
+            onClick={() => {
+              clearTransitionTimeout();
+              unlockAudio();
+              setScreen("menu");
+            }}
+          >
             <NavIcon type="menu" />
             <span>Menú</span>
           </button>
