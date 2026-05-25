@@ -1111,7 +1111,16 @@ export default function App() {
             >
               <img src="/mapa-inicio-museo.png" alt="Mapa del punto de partida en el Museo" />
             </div>
-          </section>
+          
+
+            <button className="start-button compact intro-start-button" onClick={goToMap}>
+              <span>Iniciar misión</span>
+              <svg viewBox="0 0 40 40" aria-hidden="true">
+                <path d="M8 20h22" />
+                <path d="m22 11 9 9-9 9" />
+              </svg>
+            </button>
+</section>
         )}
 
                 {screen === "map" && (
@@ -1417,6 +1426,7 @@ export default function App() {
     </main>
   );
 }
+
 
 
 

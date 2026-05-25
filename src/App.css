@@ -3524,3 +3524,60 @@ button {
   }
 }
 
+
+/* =========================================================
+   BOTÓN INICIAR MISIÓN EN PANTALLA INTRO
+   ========================================================= */
+
+.intro-start-button {
+  display: flex !important;
+  max-width: 310px !important;
+  min-height: 50px !important;
+  margin: 14px auto 0 !important;
+  font-size: 17px !important;
+}
+
+@media (max-height: 760px) {
+  .intro-start-button {
+    min-height: 46px !important;
+    font-size: 16px !important;
+    margin-top: 10px !important;
+  }
+}
+
+
+/* =========================================================
+   AGRANDAR MAPA INICIO MUSEO
+   ========================================================= */
+
+.intro-map-small {
+  width: min(100%, 470px) !important;
+  margin: 12px auto 0 !important;
+}
+
+.intro-map-small img {
+  width: 100% !important;
+  max-height: 320px !important;
+  object-fit: contain !important;
+}
+
+@media (max-height: 760px) {
+  .intro-map-small {
+    width: min(96%, 430px) !important;
+  }
+
+  .intro-map-small img {
+    max-height: 260px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .intro-map-small {
+    width: 98% !important;
+  }
+
+  .intro-map-small img {
+    max-height: 290px !important;
+  }
+}
+
