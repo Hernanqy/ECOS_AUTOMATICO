@@ -940,3 +940,23 @@ button {
     0 0 24px rgba(255, 255, 255, 0.35);
   pointer-events: none;
 }
+
+.orientation-section {
+  padding-bottom: 120px;
+}
+
+.orientation-map-card {
+  width: 100%;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(0, 80, 200, 0.12);
+  border: 1px solid rgba(0, 96, 255, 0.12);
+}
+
+.orientation-map-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+

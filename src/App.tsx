@@ -1,7 +1,7 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
-type Screen = "home" | "map" | "mission" | "scanner" | "achievements" | "menu";
+type Screen = "home" | "map" | "mission" | "scanner" | "orientation" | "achievements" | "menu";
 
 type ZoneId = "museo" | "lago" | "condorera" | "casona";
 
@@ -22,51 +22,46 @@ type GameProgress = {
 
 type SoundType = "launch" | "found" | "duplicate" | "zone" | "final";
 
-const validCodes = [
-  "M1", "M2", "M3",
-  "L1", "L2", "L3",
-  "CO1", "CO2", "CO3",
-  "CA1", "CA2", "CA3"
-];
-
 const zones: Zone[] = [
   {
     id: "museo",
     label: "Museo",
     title: "Ecos del pasado",
-    mission: "Buscá 3 ecos en las salas.",
-    success: "¡Museo completo! Ahora sigan hacia el Lago.",
+    mission: "Buscá 2 ecos en las salas.",
+    success: "¡Museo completo! Ahora seguí hacia el Lago.",
     icon: "/icons/museo.png",
-    codes: ["M1", "M2", "M3"]
+    codes: ["M1", "M2"]
   },
   {
     id: "lago",
     label: "Lago",
     title: "Ecos del agua",
-    mission: "Buscá 3 ecos cerca del agua.",
-    success: "¡Lago completo! Ahora sigan hacia La Condorera.",
+    mission: "Buscá 2 ecos cerca del agua.",
+    success: "¡Lago completo! Ahora seguí hacia La Condorera.",
     icon: "/icons/lago.png",
-    codes: ["L1", "L2", "L3"]
+    codes: ["L1", "L2"]
   },
   {
     id: "condorera",
     label: "Condorera",
     title: "Ecos del aire",
-    mission: "Buscá 3 ecos mirando alto.",
-    success: "¡Condorera completa! Ahora vayan hacia La Casona.",
+    mission: "Buscá 2 ecos mirando alto.",
+    success: "¡Condorera completa! Ahora seguí hacia La Casona.",
     icon: "/icons/condorera.png",
-    codes: ["CO1", "CO2", "CO3"]
+    codes: ["CO1", "CO2"]
   },
   {
     id: "casona",
     label: "Casona",
     title: "Ecos de la casa",
-    mission: "Buscá los últimos 3 ecos.",
+    mission: "Buscá los últimos 2 ecos.",
     success: "¡Completaron Ecos de La Máxima!",
     icon: "/icons/casona.png",
-    codes: ["CA1", "CA2", "CA3"]
+    codes: ["CA1", "CA2"]
   }
 ];
+
+const validCodes = zones.flatMap((zone) => zone.codes);
 
 const initialProgress: GameProgress = {
   currentZoneIndex: 0,
@@ -169,6 +164,13 @@ function clearUrlParams() {
   window.history.replaceState({}, document.title, window.location.pathname);
 }
 
+function getOrientationImage(completedZoneIndex: number) {
+  if (completedZoneIndex === 0) return "/mapa-museo-lago.png";
+  if (completedZoneIndex === 1) return "/mapa-lago-condorera.png";
+  if (completedZoneIndex === 2) return "/mapa-condorera-casona.png";
+  return "/mapa-final.png";
+}
+
 function NavIcon({ type }: { type: "inicio" | "mapa" | "eco" | "logros" | "menu" }) {
   if (type === "inicio") {
     return (
@@ -264,6 +266,7 @@ export default function App() {
   const [scanMessage, setScanMessage] = useState("");
   const [manualCode, setManualCode] = useState("");
   const [scannerSession, setScannerSession] = useState(0);
+  const [completedZoneForMap, setCompletedZoneForMap] = useState<number | null>(null);
 
   const scannerRef = useRef<any>(null);
   const scannerRunningRef = useRef(false);
@@ -276,10 +279,12 @@ export default function App() {
 
   const currentZone = zones[progress.currentZoneIndex];
   const currentFound = progress.foundCodes[currentZone.id].length;
+  const currentRequired = currentZone.codes.length;
   const totalFound = Object.values(progress.foundCodes).reduce((sum, list) => sum + list.length, 0);
+  const totalRequired = zones.reduce((sum, zone) => sum + zone.codes.length, 0);
 
   const isExperienceComplete = useMemo(() => {
-    return zones.every((zone) => progress.foundCodes[zone.id].length === 3);
+    return zones.every((zone) => progress.foundCodes[zone.id].length === zone.codes.length);
   }, [progress]);
 
   function getAudioContext() {
@@ -324,7 +329,7 @@ export default function App() {
         playSound("launch");
       }
     } catch {
-      // El navegador puede bloquear audio hasta la interacción del usuario.
+      // Nada.
     }
   }
 
@@ -453,15 +458,22 @@ export default function App() {
     }
 
     const newFoundInZone = [...foundInZone, scannedCode];
-    const zoneCompleted = newFoundInZone.length === 3;
+    const zoneCompleted = newFoundInZone.length === zone.codes.length;
 
-    const completedAllZones =
-      zone.id === "casona" &&
-      zoneCompleted &&
-      zones.every((item) => {
-        if (item.id === zone.id) return newFoundInZone.length === 3;
-        return progress.foundCodes[item.id].length === 3;
-      });
+    const newProgress: GameProgress = {
+      currentZoneIndex: zoneCompleted
+        ? Math.min(progress.currentZoneIndex + 1, zones.length - 1)
+        : progress.currentZoneIndex,
+      foundCodes: {
+        ...progress.foundCodes,
+        [zone.id]: newFoundInZone
+      }
+    };
+
+    const completedAllZones = zones.every((item) => {
+      if (item.id === zone.id) return newFoundInZone.length === item.codes.length;
+      return newProgress.foundCodes[item.id].length === item.codes.length;
+    });
 
     if (completedAllZones) {
       playSound("final");
@@ -471,18 +483,6 @@ export default function App() {
       playSound("found");
     }
 
-    const nextZoneIndex = zoneCompleted
-      ? Math.min(progress.currentZoneIndex + 1, zones.length - 1)
-      : progress.currentZoneIndex;
-
-    const newProgress: GameProgress = {
-      currentZoneIndex: nextZoneIndex,
-      foundCodes: {
-        ...progress.foundCodes,
-        [zone.id]: newFoundInZone
-      }
-    };
-
     setProgress(newProgress);
     setScreen("scanner");
 
@@ -491,12 +491,20 @@ export default function App() {
     } else if (zoneCompleted) {
       setScanMessage(zone.success);
     } else {
-      setScanMessage(`¡Eco encontrado! ${newFoundInZone.length}/3`);
+      setScanMessage(`¡Eco encontrado! ${newFoundInZone.length}/${zone.codes.length}`);
     }
 
     setTimeout(() => {
-      setScreen(zoneCompleted ? "map" : "mission");
-    }, completedAllZones ? 2600 : 1900);
+      if (completedAllZones) {
+        setCompletedZoneForMap(3);
+        setScreen("orientation");
+      } else if (zoneCompleted) {
+        setCompletedZoneForMap(codeZoneIndex);
+        setScreen("orientation");
+      } else {
+        setScreen("mission");
+      }
+    }, completedAllZones ? 2300 : 1700);
   };
 
   useEffect(() => {
@@ -624,9 +632,21 @@ export default function App() {
     setScreen("scanner");
   };
 
+  const goFromOrientation = () => {
+    unlockAudio();
+
+    if (isExperienceComplete) {
+      setScreen("achievements");
+      return;
+    }
+
+    setScreen("mission");
+  };
+
   const resetGame = () => {
     stopScanner();
     localStorage.removeItem("ecos_progress");
+    setCompletedZoneForMap(null);
     setProgress(initialProgress);
     setScreen("home");
   };
@@ -640,6 +660,11 @@ export default function App() {
     if (!manualCode.trim()) return;
     handleScan(manualCode);
   };
+
+  const orientationZoneIndex = completedZoneForMap ?? Math.max(progress.currentZoneIndex - 1, 0);
+  const orientationImage = getOrientationImage(orientationZoneIndex);
+  const completedLabel = zones[orientationZoneIndex]?.label ?? "Recorrido";
+  const nextLabel = zones[orientationZoneIndex + 1]?.label ?? "Final";
 
   return (
     <main className="app-shell">
@@ -716,7 +741,7 @@ export default function App() {
             <div className="map-list">
               {zones.map((zone, index) => {
                 const isActive = index === progress.currentZoneIndex;
-                const isDone = progress.foundCodes[zone.id].length === 3;
+                const isDone = progress.foundCodes[zone.id].length === zone.codes.length;
                 const isLocked = index > progress.currentZoneIndex;
 
                 return (
@@ -759,6 +784,28 @@ export default function App() {
           </section>
         )}
 
+        {screen === "orientation" && (
+          <section className="page-section orientation-section">
+            <div className="page-title">
+              <span>Orientación</span>
+              <h2>{isExperienceComplete ? "Misión cumplida" : `${completedLabel} completo`}</h2>
+              <p>{isExperienceComplete ? "Completaste todos los ecos." : `Ahora seguí hacia ${nextLabel}.`}</p>
+            </div>
+
+            <div className="orientation-map-card">
+              <img src={orientationImage} alt="Mapa de orientación" />
+            </div>
+
+            <button className="start-button compact" onClick={goFromOrientation}>
+              <span>{isExperienceComplete ? "Ver logros" : `Ir a ${nextLabel}`}</span>
+              <svg viewBox="0 0 40 40" aria-hidden="true">
+                <path d="M8 20h22" />
+                <path d="m22 11 9 9-9 9" />
+              </svg>
+            </button>
+          </section>
+        )}
+
         {screen === "mission" && (
           <section className="page-section">
             <div className="mission-card">
@@ -772,17 +819,17 @@ export default function App() {
               <p>{isExperienceComplete ? "La experiencia está completa." : currentZone.mission}</p>
 
               <div className="progress-card">
-                <strong>{currentFound}/3</strong>
+                <strong>{currentFound}/{currentRequired}</strong>
                 <span>ecos encontrados</span>
               </div>
 
-              {!isExperienceComplete && currentFound < 3 && (
+              {!isExperienceComplete && currentFound < currentRequired && (
                 <button className="scan-button" onClick={goToScanner}>
                   Escanear QR
                 </button>
               )}
 
-              {currentFound === 3 && !isExperienceComplete && (
+              {currentFound === currentRequired && !isExperienceComplete && (
                 <div className="success-panel">
                   <strong>¡Zona completa!</strong>
                   <span>{zones[Math.max(progress.currentZoneIndex - 1, 0)].success}</span>
@@ -853,7 +900,7 @@ export default function App() {
             <div className="page-title">
               <span>Logros</span>
               <h2>Tus ecos</h2>
-              <p>{totalFound}/12 ecos encontrados.</p>
+              <p>{totalFound}/{totalRequired} ecos encontrados.</p>
             </div>
 
             <div className="achievement-grid">
@@ -861,7 +908,7 @@ export default function App() {
                 <div className="achievement-card" key={zone.id}>
                   <img src={zone.icon} alt="" />
                   <strong>{zone.label}</strong>
-                  <span>{progress.foundCodes[zone.id].length}/3</span>
+                  <span>{progress.foundCodes[zone.id].length}/{zone.codes.length}</span>
                 </div>
               ))}
             </div>
@@ -888,7 +935,7 @@ export default function App() {
             <span>Inicio</span>
           </button>
 
-          <button className={`nav-item ${screen === "map" ? "active" : ""}`} onClick={goToMap}>
+          <button className={`nav-item ${screen === "map" || screen === "orientation" ? "active" : ""}`} onClick={goToMap}>
             <NavIcon type="mapa" />
             <span>Mapa</span>
           </button>
