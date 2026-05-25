@@ -1,7 +1,7 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
-type Screen = "home" | "map" | "mission" | "scanner" | "orientation" | "achievements" | "menu";
+type Screen = "home" | "map" | "mission" | "scanner" | "question" | "orientation" | "achievements" | "menu";
 
 type ZoneId = "museo" | "lago" | "condorera" | "casona";
 
@@ -22,7 +22,22 @@ type GameProgress = {
 
 type SoundType = "launch" | "found" | "duplicate" | "zone" | "final";
 
-const STORAGE_KEY = "ecos_progress_v2";
+type QuestionOption = {
+  id: string;
+  text: string;
+};
+
+type EcoQuestion = {
+  code: string;
+  title: string;
+  question: string;
+  options: QuestionOption[];
+  correctOptionId: string;
+  successText: string;
+  errorText: string;
+};
+
+const STORAGE_KEY = "ecos_progress_v4";
 
 const zones: Zone[] = [
   {
@@ -63,6 +78,113 @@ const zones: Zone[] = [
   }
 ];
 
+const questions: Record<string, EcoQuestion> = {
+  M1: {
+    code: "M1",
+    title: "Eco de la megafauna",
+    question: "¿Qué nos ayudan a conocer los fósiles?",
+    options: [
+      { id: "A", text: "Animales que vivieron en el pasado" },
+      { id: "B", text: "Autos antiguos" },
+      { id: "C", text: "Planetas lejanos" }
+    ],
+    correctOptionId: "A",
+    successText: "¡Correcto! Los fósiles guardan pistas del pasado.",
+    errorText: "Casi. Mirá la sala y probá otra vez."
+  },
+  M2: {
+    code: "M2",
+    title: "Eco de la ciencia",
+    question: "¿Qué hace una científica cuando encuentra una pista?",
+    options: [
+      { id: "A", text: "La observa e investiga" },
+      { id: "B", text: "La esconde" },
+      { id: "C", text: "La ignora" }
+    ],
+    correctOptionId: "A",
+    successText: "¡Muy bien! Observar es el primer paso para descubrir.",
+    errorText: "Probá otra vez. Pensá cómo trabaja la ciencia."
+  },
+  L1: {
+    code: "L1",
+    title: "Eco del lago",
+    question: "¿Qué animal suele vivir cerca del agua y la vegetación?",
+    options: [
+      { id: "A", text: "Carpincho" },
+      { id: "B", text: "Pingüino" },
+      { id: "C", text: "Camello" }
+    ],
+    correctOptionId: "A",
+    successText: "¡Correcto! El carpincho es parte de estos ambientes.",
+    errorText: "Casi. Pensá en un animal de lagunas y orillas."
+  },
+  L2: {
+    code: "L2",
+    title: "Eco de las aves",
+    question: "¿Qué hacen muchas aves en los árboles del entorno?",
+    options: [
+      { id: "A", text: "Buscan refugio, alimento o descanso" },
+      { id: "B", text: "Construyen autos" },
+      { id: "C", text: "Viven bajo tierra siempre" }
+    ],
+    correctOptionId: "A",
+    successText: "¡Excelente! Los árboles son refugio para muchas aves.",
+    errorText: "Probá otra vez. Observá el entorno del lago."
+  },
+  CO1: {
+    code: "CO1",
+    title: "Eco del cóndor",
+    question: "¿Qué ave representa la altura y los vuelos planeados?",
+    options: [
+      { id: "A", text: "Cóndor andino" },
+      { id: "B", text: "Gallina" },
+      { id: "C", text: "Pato doméstico" }
+    ],
+    correctOptionId: "A",
+    successText: "¡Correcto! Olavarría, tierra de cóndores.",
+    errorText: "Casi. Pensá en el ave protagonista de esta zona."
+  },
+  CO2: {
+    code: "CO2",
+    title: "Eco del territorio",
+    question: "¿Qué necesitamos hacer para cuidar a las aves y su ambiente?",
+    options: [
+      { id: "A", text: "Respetar el lugar y no molestar a los animales" },
+      { id: "B", text: "Hacer mucho ruido siempre" },
+      { id: "C", text: "Tirar residuos" }
+    ],
+    correctOptionId: "A",
+    successText: "¡Muy bien! Cuidar el ambiente también es parte de la misión.",
+    errorText: "Probá otra vez. Pensá en una acción de cuidado."
+  },
+  CA1: {
+    code: "CA1",
+    title: "Eco de la casona",
+    question: "¿Qué guarda un edificio antiguo como la Casona?",
+    options: [
+      { id: "A", text: "Historias y memorias del lugar" },
+      { id: "B", text: "Naves espaciales" },
+      { id: "C", text: "Solo cosas nuevas" }
+    ],
+    correctOptionId: "A",
+    successText: "¡Correcto! La Casona también guarda memoria.",
+    errorText: "Casi. Pensá en el paso del tiempo."
+  },
+  CA2: {
+    code: "CA2",
+    title: "Eco del recorrido",
+    question: "¿Qué hiciste durante toda la experiencia?",
+    options: [
+      { id: "A", text: "Exploré, observé y descubrí ecos" },
+      { id: "B", text: "Me quedé quieto sin mirar" },
+      { id: "C", text: "Ignoré las pistas" }
+    ],
+    correctOptionId: "A",
+    successText: "¡Excelente! Completaste el recorrido con atención.",
+    errorText: "Probá otra vez. Pensá en todo lo que hiciste en la aventura."
+  }
+};
+
 const validCodes = zones.flatMap((zone) => zone.codes);
 
 const initialProgress: GameProgress = {
@@ -75,31 +197,57 @@ const initialProgress: GameProgress = {
   }
 };
 
-function cleanProgress(progress: GameProgress): GameProgress {
-  const foundCodes = {
-    museo: (progress.foundCodes.museo ?? []).filter((code) => zones[0].codes.includes(code)),
-    lago: (progress.foundCodes.lago ?? []).filter((code) => zones[1].codes.includes(code)),
-    condorera: (progress.foundCodes.condorera ?? []).filter((code) => zones[2].codes.includes(code)),
-    casona: (progress.foundCodes.casona ?? []).filter((code) => zones[3].codes.includes(code))
-  };
+function getZoneByCode(code: string) {
+  return zones.find((zone) => zone.codes.includes(code));
+}
 
-  let currentZoneIndex = 0;
+function getZoneIndexByCode(code: string) {
+  return zones.findIndex((zone) => zone.codes.includes(code));
+}
 
-  for (let index = 0; index < zones.length; index++) {
-    const zone = zones[index];
+function isZoneComplete(progress: GameProgress, zone: Zone) {
+  return zone.codes.every((code) => progress.foundCodes[zone.id].includes(code));
+}
 
-    if (foundCodes[zone.id].length < zone.codes.length) {
-      currentZoneIndex = index;
-      break;
-    }
+function isExperienceFinished(progress: GameProgress) {
+  return zones.every((zone) => isZoneComplete(progress, zone));
+}
 
-    currentZoneIndex = Math.min(index + 1, zones.length - 1);
+function getFirstIncompleteZoneIndex(progress: GameProgress) {
+  const firstIncompleteIndex = zones.findIndex((zone) => !isZoneComplete(progress, zone));
+
+  if (firstIncompleteIndex === -1) {
+    return zones.length - 1;
   }
 
-  return {
-    currentZoneIndex,
-    foundCodes
+  return firstIncompleteIndex;
+}
+
+function normalizeProgress(progress: GameProgress): GameProgress {
+  const cleanedFoundCodes: Record<ZoneId, string[]> = {
+    museo: [],
+    lago: [],
+    condorera: [],
+    casona: []
   };
+
+  zones.forEach((zone) => {
+    const savedCodes = progress.foundCodes[zone.id] ?? [];
+    const validSavedCodes = savedCodes.filter((code, index) => {
+      return zone.codes.includes(code) && savedCodes.indexOf(code) === index;
+    });
+
+    cleanedFoundCodes[zone.id] = validSavedCodes;
+  });
+
+  const cleanedProgress: GameProgress = {
+    currentZoneIndex: 0,
+    foundCodes: cleanedFoundCodes
+  };
+
+  cleanedProgress.currentZoneIndex = getFirstIncompleteZoneIndex(cleanedProgress);
+
+  return cleanedProgress;
 }
 
 function loadProgress(): GameProgress {
@@ -112,7 +260,7 @@ function loadProgress(): GameProgress {
 
     if (!parsed.foundCodes) return initialProgress;
 
-    return cleanProgress({
+    return normalizeProgress({
       currentZoneIndex: parsed.currentZoneIndex ?? 0,
       foundCodes: {
         museo: parsed.foundCodes.museo ?? [],
@@ -127,13 +275,15 @@ function loadProgress(): GameProgress {
 }
 
 function saveProgress(progress: GameProgress) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizeProgress(progress)));
 }
 
 function resetStoredProgress() {
   localStorage.removeItem("ecos_progress");
   localStorage.removeItem("ecos_progress_v1");
-  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem("ecos_progress_v2");
+  localStorage.removeItem("ecos_progress_v3");
+  localStorage.removeItem("ecos_progress_v4");
 }
 
 function extractValidCode(text: string) {
@@ -307,6 +457,9 @@ export default function App() {
   const [manualCode, setManualCode] = useState("");
   const [scannerSession, setScannerSession] = useState(0);
   const [completedZoneForMap, setCompletedZoneForMap] = useState<number | null>(null);
+  const [pendingCode, setPendingCode] = useState("");
+  const [questionFeedback, setQuestionFeedback] = useState("");
+  const [questionLocked, setQuestionLocked] = useState(false);
 
   const scannerRef = useRef<any>(null);
   const scannerRunningRef = useRef(false);
@@ -318,21 +471,27 @@ export default function App() {
   const audioUnlockedRef = useRef(false);
   const launchSoundPlayedRef = useRef(false);
 
-  const currentZone = zones[progress.currentZoneIndex];
-  const currentFound = progress.foundCodes[currentZone.id].length;
+  const safeProgress = normalizeProgress(progress);
+  const currentZone = zones[safeProgress.currentZoneIndex];
+  const currentFound = safeProgress.foundCodes[currentZone.id].length;
   const currentRequired = currentZone.codes.length;
-  const totalFound = Object.values(progress.foundCodes).reduce((sum, list) => sum + list.length, 0);
+  const totalFound = Object.values(safeProgress.foundCodes).reduce((sum, list) => sum + list.length, 0);
   const totalRequired = zones.reduce((sum, zone) => sum + zone.codes.length, 0);
+  const currentQuestion = pendingCode ? questions[pendingCode] : null;
 
   const isExperienceComplete = useMemo(() => {
-    return zones.every((zone) => progress.foundCodes[zone.id].length === zone.codes.length);
-  }, [progress]);
+    return isExperienceFinished(safeProgress);
+  }, [safeProgress]);
 
   function clearTransitionTimeout() {
     if (transitionTimeoutRef.current !== null) {
       window.clearTimeout(transitionTimeoutRef.current);
       transitionTimeoutRef.current = null;
     }
+  }
+
+  function safeSetProgress(nextProgress: GameProgress) {
+    setProgress(normalizeProgress(nextProgress));
   }
 
   function getAudioContext() {
@@ -448,85 +607,132 @@ export default function App() {
     qrReadRef.current = false;
   }
 
+  function returnToCurrentMission(message: string, delay = 1800) {
+    setScanMessage(message);
+
+    transitionTimeoutRef.current = window.setTimeout(() => {
+      transitionTimeoutRef.current = null;
+      qrReadRef.current = false;
+      setScreen("mission");
+    }, delay);
+  }
+
+  function validateScannedCode(scannedCode: string) {
+    const activeProgress = normalizeProgress(progress);
+    const scannedZone = getZoneByCode(scannedCode);
+    const scannedZoneIndex = getZoneIndexByCode(scannedCode);
+    const activeZoneIndex = activeProgress.currentZoneIndex;
+    const activeZone = zones[activeZoneIndex];
+
+    if (!scannedZone || scannedZoneIndex === -1) {
+      return {
+        ok: false,
+        message: "Este QR no pertenece a la experiencia."
+      };
+    }
+
+    const codeAlreadyFound = activeProgress.foundCodes[scannedZone.id].includes(scannedCode);
+
+    if (codeAlreadyFound) {
+      if (scannedZoneIndex < activeZoneIndex) {
+        return {
+          ok: false,
+          message: `Ese eco ya fue encontrado. Ahora seguí con ${activeZone.label}.`
+        };
+      }
+
+      return {
+        ok: false,
+        message: "Este eco ya fue encontrado."
+      };
+    }
+
+    if (scannedZoneIndex < activeZoneIndex) {
+      return {
+        ok: false,
+        message: `Esa zona ya fue completada. Ahora seguí con ${activeZone.label}.`
+      };
+    }
+
+    if (scannedZoneIndex > activeZoneIndex) {
+      return {
+        ok: false,
+        message: `Todavía no llegaste a ${scannedZone.label}. Primero completá ${activeZone.label}.`
+      };
+    }
+
+    return {
+      ok: true,
+      message: ""
+    };
+  }
+
   const handleScan = (value: string) => {
     clearTransitionTimeout();
 
     const scannedCode = getCodeFromQR(value);
-    const codeZoneIndex = zones.findIndex((zone) => zone.codes.includes(scannedCode));
+    const validation = validateScannedCode(scannedCode);
 
-    if (codeZoneIndex === -1) {
+    if (!validation.ok) {
       playSound("duplicate");
       setScreen("scanner");
-      setScanMessage(`No reconocido: ${scannedCode}`);
-
-      transitionTimeoutRef.current = window.setTimeout(() => {
-        transitionTimeoutRef.current = null;
-        qrReadRef.current = false;
-        setScanMessage("Probá con otro QR.");
-      }, 2500);
-
+      returnToCurrentMission(validation.message, 2200);
       return;
     }
 
-    if (codeZoneIndex > progress.currentZoneIndex) {
+    if (!questions[scannedCode]) {
       playSound("duplicate");
       setScreen("scanner");
-      setScanMessage("Primero completá la zona actual.");
-
-      transitionTimeoutRef.current = window.setTimeout(() => {
-        transitionTimeoutRef.current = null;
-        qrReadRef.current = false;
-        setScanMessage("Apuntá la cámara al QR.");
-      }, 2200);
-
+      returnToCurrentMission("Este eco todavía no tiene pregunta cargada.", 2200);
       return;
     }
 
-    const zone = zones[codeZoneIndex];
-    const foundInZone = progress.foundCodes[zone.id];
+    setPendingCode(scannedCode);
+    setQuestionFeedback("");
+    setQuestionLocked(false);
+    setScreen("question");
+  };
 
-    if (foundInZone.includes(scannedCode)) {
+  function completeEcoAfterCorrectAnswer(code: string) {
+    const activeProgress = normalizeProgress(progress);
+    const scannedZone = getZoneByCode(code);
+    const scannedZoneIndex = getZoneIndexByCode(code);
+
+    if (!scannedZone || scannedZoneIndex === -1) {
       playSound("duplicate");
-      setScreen("scanner");
-      setScanMessage("Este eco ya fue encontrado.");
-
-      transitionTimeoutRef.current = window.setTimeout(() => {
-        transitionTimeoutRef.current = null;
-        setScreen("mission");
-      }, 1700);
-
+      setQuestionFeedback("Este QR no pertenece a la experiencia.");
+      setQuestionLocked(false);
       return;
     }
 
-    if (codeZoneIndex < progress.currentZoneIndex) {
+    const validation = validateScannedCode(code);
+
+    if (!validation.ok) {
       playSound("duplicate");
-      setScreen("scanner");
-      setScanMessage("Ese eco ya pertenece a una zona completada.");
-
-      transitionTimeoutRef.current = window.setTimeout(() => {
-        transitionTimeoutRef.current = null;
-        setScreen("map");
-      }, 1700);
-
+      setQuestionFeedback(validation.message);
+      setQuestionLocked(false);
       return;
     }
 
-    const newFoundInZone = [...foundInZone, scannedCode];
-    const zoneCompleted = newFoundInZone.length === zone.codes.length;
-
-    const newProgress: GameProgress = {
-      currentZoneIndex: zoneCompleted
-        ? Math.min(progress.currentZoneIndex + 1, zones.length - 1)
-        : progress.currentZoneIndex,
-      foundCodes: {
-        ...progress.foundCodes,
-        [zone.id]: newFoundInZone
-      }
+    const newFoundCodes = {
+      ...activeProgress.foundCodes,
+      [scannedZone.id]: [...activeProgress.foundCodes[scannedZone.id], code]
     };
 
-    const completedAllZones = zones.every((item) => {
-      if (item.id === zone.id) return newFoundInZone.length === item.codes.length;
-      return newProgress.foundCodes[item.id].length === item.codes.length;
+    const zoneCompleted = newFoundCodes[scannedZone.id].length === scannedZone.codes.length;
+
+    const temporaryProgress: GameProgress = {
+      currentZoneIndex: activeProgress.currentZoneIndex,
+      foundCodes: newFoundCodes
+    };
+
+    const completedAllZones = isExperienceFinished(temporaryProgress);
+
+    const nextProgress: GameProgress = normalizeProgress({
+      currentZoneIndex: zoneCompleted
+        ? Math.min(activeProgress.currentZoneIndex + 1, zones.length - 1)
+        : activeProgress.currentZoneIndex,
+      foundCodes: newFoundCodes
     });
 
     if (completedAllZones) {
@@ -537,19 +743,22 @@ export default function App() {
       playSound("found");
     }
 
-    setProgress(newProgress);
-    setScreen("scanner");
+    safeSetProgress(nextProgress);
+
+    const question = questions[code];
 
     if (completedAllZones) {
-      setScanMessage("¡Completaron Ecos de La Máxima!");
+      setQuestionFeedback("¡Correcto! Completaste Ecos de La Máxima.");
     } else if (zoneCompleted) {
-      setScanMessage(zone.success);
+      setQuestionFeedback(scannedZone.success);
     } else {
-      setScanMessage(`¡Eco encontrado! ${newFoundInZone.length}/${zone.codes.length}`);
+      setQuestionFeedback(question.successText);
     }
 
     transitionTimeoutRef.current = window.setTimeout(() => {
       transitionTimeoutRef.current = null;
+      setPendingCode("");
+      setQuestionLocked(false);
 
       if (completedAllZones) {
         setCompletedZoneForMap(3);
@@ -558,14 +767,27 @@ export default function App() {
       }
 
       if (zoneCompleted) {
-        setCompletedZoneForMap(codeZoneIndex);
+        setCompletedZoneForMap(scannedZoneIndex);
         setScreen("orientation");
         return;
       }
 
       setScreen("mission");
-    }, zoneCompleted ? 2500 : 1500);
-  };
+    }, zoneCompleted ? 2400 : 1700);
+  }
+
+  function answerQuestion(optionId: string) {
+    if (!currentQuestion || questionLocked) return;
+
+    if (optionId !== currentQuestion.correctOptionId) {
+      playSound("duplicate");
+      setQuestionFeedback(currentQuestion.errorText);
+      return;
+    }
+
+    setQuestionLocked(true);
+    completeEcoAfterCorrectAnswer(currentQuestion.code);
+  }
 
   useEffect(() => {
     saveProgress(progress);
@@ -593,7 +815,7 @@ export default function App() {
     if (shouldResetFromUrl()) {
       resetStoredProgress();
       setCompletedZoneForMap(null);
-      setProgress(initialProgress);
+      safeSetProgress(initialProgress);
       hasProcessedUrlRef.current = true;
       clearUrlParams();
       return;
@@ -675,7 +897,7 @@ export default function App() {
       cancelled = true;
       stopScanner();
     };
-  }, [screen, progress.currentZoneIndex, scannerSession]);
+  }, [screen, safeProgress.currentZoneIndex, scannerSession]);
 
   const goToHome = () => {
     clearTransitionTimeout();
@@ -692,6 +914,9 @@ export default function App() {
   const goToMission = () => {
     clearTransitionTimeout();
     unlockAudio();
+    setPendingCode("");
+    setQuestionFeedback("");
+    setQuestionLocked(false);
     setScreen("mission");
   };
 
@@ -702,6 +927,9 @@ export default function App() {
     qrReadRef.current = false;
     scannerRunningRef.current = false;
     scannerRef.current = null;
+    setPendingCode("");
+    setQuestionFeedback("");
+    setQuestionLocked(false);
     setScannerSession((value) => value + 1);
     setScreen("scanner");
   };
@@ -723,12 +951,15 @@ export default function App() {
     stopScanner();
     resetStoredProgress();
     setCompletedZoneForMap(null);
-    setProgress(initialProgress);
+    setPendingCode("");
+    setQuestionFeedback("");
+    setQuestionLocked(false);
+    safeSetProgress(initialProgress);
     setScreen("home");
   };
 
   const simulateScan = () => {
-    const missingCode = currentZone.codes.find((code) => !progress.foundCodes[currentZone.id].includes(code));
+    const missingCode = currentZone.codes.find((code) => !safeProgress.foundCodes[currentZone.id].includes(code));
     if (missingCode) handleScan(missingCode);
   };
 
@@ -737,7 +968,7 @@ export default function App() {
     handleScan(manualCode);
   };
 
-  const orientationZoneIndex = completedZoneForMap ?? Math.max(progress.currentZoneIndex - 1, 0);
+  const orientationZoneIndex = completedZoneForMap ?? Math.max(safeProgress.currentZoneIndex - 1, 0);
   const orientationImage = getOrientationImage(orientationZoneIndex);
   const completedLabel = zones[orientationZoneIndex]?.label ?? "Recorrido";
   const nextLabel = zones[orientationZoneIndex + 1]?.label ?? "Final";
@@ -816,20 +1047,19 @@ export default function App() {
 
             <div className="map-list">
               {zones.map((zone, index) => {
-                const isActive = index === progress.currentZoneIndex;
-                const isDone = progress.foundCodes[zone.id].length === zone.codes.length;
-                const isLocked = index > progress.currentZoneIndex;
+                const isActive = index === safeProgress.currentZoneIndex;
+                const isDone = isZoneComplete(safeProgress, zone);
+                const isLocked = index > safeProgress.currentZoneIndex;
 
                 return (
                   <button
                     className={`map-item ${isActive ? "active" : ""} ${isDone ? "done" : ""} ${isLocked ? "locked" : ""}`}
                     key={zone.id}
-                    disabled={isLocked}
+                    disabled={isLocked || isDone}
                     onClick={() => {
-                      if (!isLocked) {
+                      if (!isLocked && !isDone) {
                         clearTransitionTimeout();
                         unlockAudio();
-                        setProgress({ ...progress, currentZoneIndex: index });
                         setScreen("mission");
                       }
                     }}
@@ -858,6 +1088,40 @@ export default function App() {
                 <path d="m22 11 9 9-9 9" />
               </svg>
             </button>
+          </section>
+        )}
+
+        {screen === "question" && currentQuestion && (
+          <section className="page-section">
+            <div className="question-card">
+              <span className="mission-kicker">Pregunta del eco</span>
+              <h2>{currentQuestion.title}</h2>
+              <p>{currentQuestion.question}</p>
+
+              <div className="question-options">
+                {currentQuestion.options.map((option) => (
+                  <button
+                    className="question-option"
+                    key={option.id}
+                    disabled={questionLocked}
+                    onClick={() => answerQuestion(option.id)}
+                  >
+                    <strong>{option.id}</strong>
+                    <span>{option.text}</span>
+                  </button>
+                ))}
+              </div>
+
+              {questionFeedback && (
+                <div className={`question-feedback ${questionLocked ? "success" : "error"}`}>
+                  {questionFeedback}
+                </div>
+              )}
+
+              <button className="secondary-button" onClick={goToMission}>
+                Volver a misión
+              </button>
+            </div>
           </section>
         )}
 
@@ -890,7 +1154,7 @@ export default function App() {
                 <img src={currentZone.icon} alt={currentZone.label} />
               </div>
 
-              <span className="mission-kicker">Zona {progress.currentZoneIndex + 1} de 4</span>
+              <span className="mission-kicker">Zona {safeProgress.currentZoneIndex + 1} de 4</span>
               <h2>{currentZone.label}</h2>
               <h3>{currentZone.title}</h3>
               <p>{isExperienceComplete ? "La experiencia está completa." : currentZone.mission}</p>
@@ -904,13 +1168,6 @@ export default function App() {
                 <button className="scan-button" onClick={goToScanner}>
                   Escanear QR
                 </button>
-              )}
-
-              {currentFound === currentRequired && !isExperienceComplete && (
-                <div className="success-panel">
-                  <strong>¡Zona completa!</strong>
-                  <span>{zones[Math.max(progress.currentZoneIndex - 1, 0)].success}</span>
-                </div>
               )}
 
               {isExperienceComplete && (
@@ -985,7 +1242,7 @@ export default function App() {
                 <div className="achievement-card" key={zone.id}>
                   <img src={zone.icon} alt="" />
                   <strong>{zone.label}</strong>
-                  <span>{progress.foundCodes[zone.id].length}/{zone.codes.length}</span>
+                  <span>{safeProgress.foundCodes[zone.id].length}/{zone.codes.length}</span>
                 </div>
               ))}
             </div>
