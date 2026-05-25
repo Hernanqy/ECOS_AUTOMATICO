@@ -3,7 +3,7 @@ import "./App.css";
 
 type Screen =
   | "home"
-  | "map"
+  | "intro"`r`n  | "map"
   | "mission"
   | "scanner"
   | "question"
@@ -954,6 +954,12 @@ export default function App() {
     unlockAudio();
     setScreen("home");
   };
+  const goToIntro = () => {
+    clearTransitionTimeout();
+    unlockAudio();
+    setScreen("intro");
+  };
+
 
   const goToMap = () => {
     clearTransitionTimeout();
@@ -1045,8 +1051,7 @@ export default function App() {
 
               <div className="guide-wrap">
                 <div className="speech-bubble">
-                  <strong>¡Hola!</strong>
-                  <span>Soy tu guía.</span>
+                  <strong>¡Hola!</strong><span>Soy el Profe Echarpe. Comencemos la aventura.</span>
                 </div>
 
                 <img className="guide-character" src="/personaje.png" alt="Guía de la experiencia" />
@@ -1072,8 +1077,7 @@ export default function App() {
                 ))}
               </div>
 
-              <button className="start-button" onClick={goToMap}>
-                <span>Comenzar</span>
+              <button className="start-button" onClick={goToIntro}><span>Comenzar</span>
                 <svg viewBox="0 0 40 40" aria-hidden="true">
                   <path d="M8 20h22" />
                   <path d="m22 11 9 9-9 9" />
@@ -1082,6 +1086,49 @@ export default function App() {
             </section>
           </>
         )}
+
+        {screen === "intro" && (
+          <section className="page-section intro-mission-section">
+            <div className="page-title">
+              <span>Antes de empezar</span>
+              <h2>Tu misión</h2>
+              <p>
+                Vas a recorrer La Máxima buscando ecos escondidos. En cada zona,
+                escaneá los QR, respondé las preguntas y desbloqueá una estampa.
+                Completá el recorrido para llenar tu álbum final.
+              </p>
+            </div>
+
+            <div className="intro-map-card">
+              <img src={getOrientationImage(3)} alt="Mapa completo del recorrido" />
+            </div>
+
+            <div className="intro-steps-card">
+              <div>
+                <strong>1</strong>
+                <span>Explorá cada zona.</span>
+              </div>
+              <div>
+                <strong>2</strong>
+                <span>Encontrá y escaneá los QR.</span>
+              </div>
+              <div>
+                <strong>3</strong>
+                <span>Respondé y ganá estampas.</span>
+              </div>
+            </div>
+
+            <button className="start-button compact" onClick={goToMap}>
+              <span>Ver recorrido</span>
+              <svg viewBox="0 0 40 40" aria-hidden="true">
+                <path d="M8 20h22" />
+                <path d="m22 11 9 9-9 9" />
+              </svg>
+            </button>
+          </section>
+        )}
+
+
 
         {screen === "map" && (
           <section className="page-section map-screen-section">
@@ -1394,3 +1441,4 @@ export default function App() {
     </main>
   );
 }
+
