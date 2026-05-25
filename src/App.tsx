@@ -528,10 +528,6 @@ export default function App() {
         ? 1
         : 2;
 
-  const activeMapImage = getOrientationImage(activeMapIndex);
-  const activeMapZone = zones[safeProgress.currentZoneIndex]?.label ?? "Recorrido";
-  const activeMapNext = zones[safeProgress.currentZoneIndex + 1]?.label ?? "Final";
-
   function clearTransitionTimeout() {
     if (transitionTimeoutRef.current !== null) {
       window.clearTimeout(transitionTimeoutRef.current);
@@ -1429,6 +1425,7 @@ export default function App() {
     </main>
   );
 }
+
 
 
 
