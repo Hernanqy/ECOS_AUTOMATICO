@@ -1489,3 +1489,315 @@ button {
   }
 }
 
+
+/* =========================================================
+   AJUSTE MOBILE HOME + NAV OCULTABLE
+   ========================================================= */
+
+/* Pantalla general: más espacio útil */
+.phone-screen {
+  min-height: 100svh;
+  overflow-x: hidden;
+}
+
+/* Header superior menos alto */
+.top-brand.centered-brand {
+  min-height: 120px !important;
+  padding: 18px 18px 22px !important;
+  border-bottom-left-radius: 42px !important;
+  border-bottom-right-radius: 42px !important;
+}
+
+/* Logo superior más chico para que no ocupe media pantalla */
+.maxima-brand-box {
+  width: min(74%, 330px) !important;
+  min-height: auto !important;
+  padding: 14px 22px !important;
+  border-radius: 22px !important;
+}
+
+.maxima-brand-box img {
+  width: 100% !important;
+  max-height: 74px !important;
+  object-fit: contain !important;
+}
+
+/* Hero más compacto */
+.hero-section {
+  padding: 46px 24px 0 !important;
+  min-height: auto !important;
+}
+
+.title-block h1 {
+  font-size: clamp(44px, 12vw, 66px) !important;
+  line-height: 0.95 !important;
+  margin-bottom: 16px !important;
+}
+
+.title-block h1 span,
+.title-block h1 strong {
+  display: block;
+}
+
+.title-block p {
+  font-size: clamp(19px, 5.1vw, 27px) !important;
+  line-height: 1.18 !important;
+  max-width: 92% !important;
+}
+
+/* Personaje más arriba y visible */
+.guide-wrap {
+  margin-top: 6px !important;
+  min-height: 270px !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+}
+
+.guide-character {
+  width: min(68vw, 310px) !important;
+  max-height: 330px !important;
+  object-fit: contain !important;
+  object-position: bottom center !important;
+  transform: translateX(34px) !important;
+}
+
+/* Globo más compacto */
+.speech-bubble {
+  left: 20px !important;
+  bottom: 24px !important;
+  max-width: 220px !important;
+  padding: 18px 22px !important;
+  border-radius: 26px !important;
+  font-size: 24px !important;
+  z-index: 3 !important;
+}
+
+.speech-bubble strong {
+  font-size: 25px !important;
+}
+
+.speech-bubble span {
+  font-size: 22px !important;
+}
+
+/* Tarjeta de ruta más cerca */
+.route-card {
+  margin: 0 18px 110px !important;
+  padding: 18px 16px 20px !important;
+  border-radius: 30px !important;
+}
+
+.route-grid {
+  gap: 8px !important;
+}
+
+.route-item strong {
+  font-size: 13px !important;
+}
+
+.zone-icon {
+  width: 52px !important;
+  height: 52px !important;
+}
+
+.start-button {
+  min-height: 62px !important;
+  margin-top: 14px !important;
+  font-size: 22px !important;
+}
+
+/* =========================================================
+   MENÚ INFERIOR OCULTABLE
+   ========================================================= */
+
+/*
+   Estado normal: el menú queda casi escondido.
+   Se ve solo una pestaña/parte superior.
+   Cuando el usuario toca el menú, aparece completo.
+*/
+
+.bottom-nav {
+  left: 14px !important;
+  right: 14px !important;
+  bottom: 12px !important;
+  width: auto !important;
+
+  padding: 12px 10px 14px !important;
+  border-radius: 30px !important;
+
+  transform: translateY(calc(100% - 44px)) !important;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    opacity 0.22s ease !important;
+
+  opacity: 0.94 !important;
+  box-shadow: 0 -10px 34px rgba(0, 40, 120, 0.16) !important;
+}
+
+/* Pestaña visual para indicar que se puede abrir */
+.bottom-nav::before {
+  content: "Menú";
+  position: absolute;
+  top: 7px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(0, 96, 255, 0.10);
+  color: #005bd8;
+  font-size: 11px;
+  font-weight: 1000;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+/* Al tocar/focalizar, se despliega */
+.bottom-nav:focus-within,
+.bottom-nav:hover {
+  transform: translateY(0) !important;
+  opacity: 1 !important;
+}
+
+/* Cuando está cerrado, dejamos los botones un poco más abajo */
+.bottom-nav .nav-item,
+.bottom-nav .scan-nav {
+  transition: transform 0.2s ease, opacity 0.2s ease !important;
+}
+
+/* Botón central más compacto para no tapar tanto */
+.scan-nav {
+  width: 76px !important;
+  height: 76px !important;
+  margin-top: -34px !important;
+}
+
+.scan-nav svg {
+  width: 34px !important;
+  height: 34px !important;
+}
+
+/* Íconos inferiores más chicos */
+.nav-item svg {
+  width: 27px !important;
+  height: 27px !important;
+}
+
+.nav-item span {
+  font-size: 12px !important;
+}
+
+/* Más espacio abajo en pantallas con contenido */
+.page-section,
+.hero-section,
+.reward-section,
+.album-section,
+.orientation-section,
+.map-screen-section {
+  padding-bottom: 120px !important;
+}
+
+/* =========================================================
+   AJUSTES PARA IPHONE / PANTALLAS BAJAS
+   ========================================================= */
+
+@media (max-height: 760px) {
+  .top-brand.centered-brand {
+    min-height: 105px !important;
+    padding: 14px 18px 18px !important;
+  }
+
+  .maxima-brand-box {
+    width: min(68%, 300px) !important;
+    padding: 11px 18px !important;
+  }
+
+  .maxima-brand-box img {
+    max-height: 58px !important;
+  }
+
+  .hero-section {
+    padding-top: 34px !important;
+  }
+
+  .title-block h1 {
+    font-size: clamp(40px, 11vw, 58px) !important;
+  }
+
+  .title-block p {
+    font-size: clamp(18px, 4.8vw, 24px) !important;
+  }
+
+  .guide-wrap {
+    min-height: 235px !important;
+  }
+
+  .guide-character {
+    width: min(64vw, 280px) !important;
+    max-height: 280px !important;
+    transform: translateX(32px) !important;
+  }
+
+  .speech-bubble {
+    bottom: 18px !important;
+    max-width: 195px !important;
+    padding: 15px 18px !important;
+  }
+
+  .speech-bubble strong {
+    font-size: 22px !important;
+  }
+
+  .speech-bubble span {
+    font-size: 19px !important;
+  }
+
+  .route-card {
+    margin-bottom: 98px !important;
+  }
+
+  .start-button {
+    min-height: 56px !important;
+    font-size: 20px !important;
+  }
+
+  .bottom-nav {
+    transform: translateY(calc(100% - 40px)) !important;
+  }
+}
+
+/* Pantallas angostas */
+@media (max-width: 390px) {
+  .top-brand.centered-brand {
+    min-height: 104px !important;
+  }
+
+  .maxima-brand-box {
+    width: 72% !important;
+  }
+
+  .hero-section {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .title-block h1 {
+    font-size: 46px !important;
+  }
+
+  .guide-character {
+    width: 68vw !important;
+    transform: translateX(30px) !important;
+  }
+
+  .speech-bubble {
+    left: 14px !important;
+  }
+
+  .bottom-nav {
+    left: 10px !important;
+    right: 10px !important;
+  }
+}
+
