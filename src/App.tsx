@@ -1110,40 +1110,31 @@ export default function App() {
               </div>
             </div>
 
-            <div className="intro-map-card intro-map-small">
+            <div
+              className="intro-map-card intro-map-small intro-map-clickable"
+              role="button"
+              tabIndex={0}
+              onClick={goToMap}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  goToMap();
+                }
+              }}
+            >
               <img src="/mapa-inicio-museo.png" alt="Mapa del punto de partida en el Museo" />
-              <div className="intro-map-caption">
-                Punto de partida: Museo
-              </div>
             </div>
-
-            <button className="start-button compact intro-start-button" onClick={goToMap}>
-              <span>Ver recorrido</span>
-              <svg viewBox="0 0 40 40" aria-hidden="true">
-                <path d="M8 20h22" />
-                <path d="m22 11 9 9-9 9" />
-              </svg>
-            </button>
           </section>
         )}
 
-        {screen === "map" && (
-          <section className="page-section map-screen-section">
-            <div className="page-title">
-              <span>Mapa</span>
-              <h2>{isExperienceComplete ? "Recorrido completo" : `Estás en ${activeMapZone}`}</h2>
-              <p>
-                {isExperienceComplete
-                  ? "Completaste todo el recorrido."
-                  : `Próximo destino: ${activeMapNext}.`}
-              </p>
+                {screen === "map" && (
+          <section className="page-section map-screen-section map-clean-section">
+            <div className="page-title map-clean-title">
+              <span>Recorrido</span>
+              <h2>Zonas de la misión</h2>
+              <p>Seguí el orden del recorrido para completar la experiencia.</p>
             </div>
 
-            <div className="orientation-map-card active-map-card">
-              <img src={activeMapImage} alt="Mapa del recorrido actual" />
-            </div>
-
-            <div className="map-list compact-map-list">
+            <div className="map-list clean-zone-list">
               {zones.map((zone, index) => {
                 const isActive = index === safeProgress.currentZoneIndex;
                 const isDone = isZoneComplete(safeProgress, zone);
@@ -1165,7 +1156,7 @@ export default function App() {
                         {isDone
                           ? "Completado"
                           : isActive
-                            ? "Estás acá"
+                            ? "Zona actual"
                             : "Bloqueado"}
                       </span>
                     </div>
@@ -1178,7 +1169,7 @@ export default function App() {
               })}
             </div>
 
-            <button className="start-button compact" onClick={goToMission}>
+            <button className="start-button compact map-mission-button" onClick={goToMission}>
               <span>{isExperienceComplete ? "Ver estado final" : "Ir a misión"}</span>
               <svg viewBox="0 0 40 40" aria-hidden="true">
                 <path d="M8 20h22" />
@@ -1438,6 +1429,7 @@ export default function App() {
     </main>
   );
 }
+
 
 
 
