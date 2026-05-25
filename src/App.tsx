@@ -3,7 +3,8 @@ import "./App.css";
 
 type Screen =
   | "home"
-  | "intro"`r`n  | "map"
+  | "intro"
+  | "map"
   | "mission"
   | "scanner"
   | "question"
@@ -1441,4 +1442,5 @@ export default function App() {
     </main>
   );
 }
+
 
