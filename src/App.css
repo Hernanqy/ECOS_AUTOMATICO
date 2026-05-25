@@ -2793,3 +2793,353 @@ button {
   }
 }
 
+
+/* =========================================================
+   HOME RESPONSIVE FINAL + PANTALLA TU MISIÓN
+   ========================================================= */
+
+.top-brand.centered-brand {
+  min-height: 88px !important;
+  padding: 10px 18px 14px !important;
+  border-bottom-left-radius: 32px !important;
+  border-bottom-right-radius: 32px !important;
+}
+
+.maxima-brand-box {
+  width: min(58vw, 245px) !important;
+  padding: 8px 16px !important;
+  border-radius: 18px !important;
+}
+
+.maxima-brand-box img {
+  max-height: 44px !important;
+  object-fit: contain !important;
+}
+
+.hero-section {
+  padding: 22px 22px 0 !important;
+  min-height: auto !important;
+}
+
+.title-block h1 {
+  font-size: clamp(42px, 11vw, 62px) !important;
+  line-height: 0.94 !important;
+  margin: 0 0 14px !important;
+}
+
+.title-block p {
+  max-width: 88% !important;
+  margin: 0 !important;
+  font-size: clamp(18px, 4.8vw, 24px) !important;
+  line-height: 1.16 !important;
+}
+
+.guide-wrap {
+  position: relative !important;
+  min-height: 255px !important;
+  margin-top: 4px !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: flex-end !important;
+  overflow: visible !important;
+}
+
+.guide-character {
+  width: min(50vw, 235px) !important;
+  max-height: 255px !important;
+  object-fit: contain !important;
+  object-position: bottom center !important;
+  transform: translateX(14px) translateY(-8px) !important;
+  z-index: 2 !important;
+}
+
+.speech-bubble {
+  left: 18px !important;
+  bottom: 52px !important;
+  max-width: 250px !important;
+  padding: 14px 16px !important;
+  border-radius: 24px !important;
+  z-index: 4 !important;
+}
+
+.speech-bubble strong {
+  display: block !important;
+  font-size: 21px !important;
+  line-height: 1 !important;
+}
+
+.speech-bubble span {
+  display: block !important;
+  margin-top: 6px !important;
+  font-size: 15px !important;
+  line-height: 1.16 !important;
+  font-weight: 850 !important;
+}
+
+.route-card {
+  position: relative !important;
+  margin: 8px 20px 118px !important;
+  padding: 14px 12px 16px !important;
+  border-radius: 26px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 16px 42px rgba(0, 80, 200, 0.10) !important;
+  border: 1px solid rgba(0, 96, 255, 0.08) !important;
+  overflow: visible !important;
+  z-index: 3 !important;
+}
+
+.route-path {
+  display: none !important;
+}
+
+.route-grid {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 4px !important;
+  align-items: start !important;
+  margin-bottom: 12px !important;
+}
+
+.route-grid::before {
+  content: "";
+  position: absolute;
+  left: 12.5%;
+  right: 12.5%;
+  top: 60px;
+  height: 16px;
+  background:
+    radial-gradient(circle, #0b63e5 0 3px, transparent 4px) left center / 18px 12px repeat-x;
+  opacity: 0.95;
+  z-index: 0;
+  filter: drop-shadow(0 2px 2px rgba(0, 96, 255, 0.14));
+}
+
+.route-item {
+  position: relative !important;
+  z-index: 1 !important;
+  min-width: 0 !important;
+  display: grid !important;
+  justify-items: center !important;
+  gap: 4px !important;
+}
+
+.zone-icon {
+  width: 45px !important;
+  height: 45px !important;
+  background: rgba(255,255,255,0.95) !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+.zone-icon img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+.route-dot {
+  position: relative !important;
+  width: 14px !important;
+  height: 14px !important;
+  margin-top: 3px !important;
+  background: #0b63e5 !important;
+  border: 3px solid #ffffff !important;
+  box-shadow: 0 4px 10px rgba(0, 96, 255, 0.25) !important;
+  z-index: 2 !important;
+}
+
+.route-item strong {
+  font-size: 12px !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  color: var(--deep) !important;
+}
+
+.start-button {
+  min-height: 48px !important;
+  max-width: 330px !important;
+  margin: 16px auto 0 !important;
+  border-radius: 20px !important;
+  font-size: 18px !important;
+  padding: 8px 18px !important;
+}
+
+.start-button svg {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.intro-mission-section {
+  padding-bottom: 125px !important;
+}
+
+.intro-mission-section .page-title p {
+  max-width: 92% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  font-size: 17px !important;
+  line-height: 1.28 !important;
+}
+
+.intro-map-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(0, 80, 200, 0.12);
+  border: 1px solid rgba(0, 96, 255, 0.12);
+  margin: 14px 0 14px;
+}
+
+.intro-map-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.intro-steps-card {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 10px;
+  margin: 12px 0 16px;
+}
+
+.intro-steps-card div {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 13px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #eaf7ff 100%);
+  box-shadow: 0 8px 22px rgba(0, 80, 200, 0.08);
+}
+
+.intro-steps-card strong {
+  width: 42px;
+  height: 42px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: #0b63e5;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 1000;
+}
+
+.intro-steps-card span {
+  color: var(--deep);
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+@media (max-height: 760px) {
+  .top-brand.centered-brand {
+    min-height: 78px !important;
+    padding: 8px 18px 12px !important;
+  }
+
+  .maxima-brand-box {
+    width: min(54vw, 225px) !important;
+    padding: 7px 14px !important;
+  }
+
+  .maxima-brand-box img {
+    max-height: 40px !important;
+  }
+
+  .hero-section {
+    padding-top: 16px !important;
+  }
+
+  .title-block h1 {
+    font-size: clamp(38px, 10vw, 56px) !important;
+  }
+
+  .title-block p {
+    font-size: clamp(17px, 4.5vw, 22px) !important;
+  }
+
+  .guide-wrap {
+    min-height: 230px !important;
+  }
+
+  .guide-character {
+    width: min(48vw, 220px) !important;
+    max-height: 230px !important;
+    transform: translateX(12px) translateY(-10px) !important;
+  }
+
+  .speech-bubble {
+    bottom: 46px !important;
+    max-width: 232px !important;
+    padding: 12px 15px !important;
+  }
+
+  .speech-bubble strong {
+    font-size: 20px !important;
+  }
+
+  .speech-bubble span {
+    font-size: 14px !important;
+  }
+
+  .route-card {
+    margin-top: 4px !important;
+    margin-bottom: 106px !important;
+    padding: 12px 10px 14px !important;
+  }
+
+  .zone-icon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .route-grid::before {
+    top: 55px !important;
+    background-size: 16px 12px !important;
+  }
+
+  .route-dot {
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  .route-item strong {
+    font-size: 11px !important;
+  }
+
+  .start-button {
+    min-height: 44px !important;
+    max-width: 300px !important;
+    font-size: 16px !important;
+    border-radius: 19px !important;
+    margin-top: 14px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .route-card {
+    margin-left: 16px !important;
+    margin-right: 16px !important;
+  }
+
+  .guide-character {
+    width: 49vw !important;
+  }
+
+  .speech-bubble {
+    left: 14px !important;
+    max-width: 225px !important;
+  }
+
+  .intro-steps-card span {
+    font-size: 15px;
+  }
+}
+
