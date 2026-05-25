@@ -1088,23 +1088,14 @@ export default function App() {
           </>
         )}
 
-        {screen === "intro" && (
+                {screen === "intro" && (
           <section className="page-section intro-mission-section">
-            <div className="page-title">
+            <div className="page-title intro-title-clean">
               <span>Antes de empezar</span>
               <h2>Tu misión</h2>
-              <p>
-                Vas a recorrer La Máxima buscando ecos escondidos. En cada zona,
-                escaneá los QR, respondé las preguntas y desbloqueá una estampa.
-                Completá el recorrido para llenar tu álbum final.
-              </p>
             </div>
 
-            <div className="intro-map-card">
-              <img src={getOrientationImage(3)} alt="Mapa completo del recorrido" />
-            </div>
-
-            <div className="intro-steps-card">
+            <div className="intro-steps-card intro-steps-featured">
               <div>
                 <strong>1</strong>
                 <span>Explorá cada zona.</span>
@@ -1119,7 +1110,14 @@ export default function App() {
               </div>
             </div>
 
-            <button className="start-button compact" onClick={goToMap}>
+            <div className="intro-map-card intro-map-small">
+              <img src="/mapa-inicio-museo.png" alt="Mapa del punto de partida en el Museo" />
+              <div className="intro-map-caption">
+                Punto de partida: Museo
+              </div>
+            </div>
+
+            <button className="start-button compact intro-start-button" onClick={goToMap}>
               <span>Ver recorrido</span>
               <svg viewBox="0 0 40 40" aria-hidden="true">
                 <path d="M8 20h22" />
@@ -1128,8 +1126,6 @@ export default function App() {
             </button>
           </section>
         )}
-
-
 
         {screen === "map" && (
           <section className="page-section map-screen-section">
@@ -1442,6 +1438,7 @@ export default function App() {
     </main>
   );
 }
+
 
 
 
