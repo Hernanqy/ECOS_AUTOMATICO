@@ -53,7 +53,7 @@ type Reward = {
   image: string;
 };
 
-const STORAGE_KEY = "ecos_progress_v5";
+const STORAGE_KEY = "ecos_progress_v6";
 
 const zones: Zone[] = [
   {
@@ -258,8 +258,7 @@ function isExperienceFinished(progress: GameProgress) {
 
 function getFirstIncompleteZoneIndex(progress: GameProgress) {
   const firstIncompleteIndex = zones.findIndex((zone) => !isZoneComplete(progress, zone));
-  if (firstIncompleteIndex === -1) return zones.length - 1;
-  return firstIncompleteIndex;
+  return firstIncompleteIndex === -1 ? zones.length - 1 : firstIncompleteIndex;
 }
 
 function normalizeProgress(progress: GameProgress): GameProgress {
@@ -283,6 +282,7 @@ function normalizeProgress(progress: GameProgress): GameProgress {
   };
 
   cleanedProgress.currentZoneIndex = getFirstIncompleteZoneIndex(cleanedProgress);
+
   return cleanedProgress;
 }
 
@@ -319,6 +319,7 @@ function resetStoredProgress() {
   localStorage.removeItem("ecos_progress_v3");
   localStorage.removeItem("ecos_progress_v4");
   localStorage.removeItem("ecos_progress_v5");
+  localStorage.removeItem("ecos_progress_v6");
 }
 
 function extractValidCode(text: string) {
@@ -512,6 +513,23 @@ export default function App() {
   const isExperienceComplete = useMemo(() => {
     return isExperienceFinished(safeProgress);
   }, [safeProgress]);
+
+  const orientationZoneIndex = completedZoneForMap ?? Math.max(safeProgress.currentZoneIndex - 1, 0);
+  const orientationImage = getOrientationImage(orientationZoneIndex);
+  const completedLabel = zones[orientationZoneIndex]?.label ?? "Recorrido";
+  const nextLabel = zones[orientationZoneIndex + 1]?.label ?? "Final";
+
+  const activeMapIndex = isExperienceComplete
+    ? 3
+    : safeProgress.currentZoneIndex === 0
+      ? 0
+      : safeProgress.currentZoneIndex === 1
+        ? 1
+        : 2;
+
+  const activeMapImage = getOrientationImage(activeMapIndex);
+  const activeMapZone = zones[safeProgress.currentZoneIndex]?.label ?? "Recorrido";
+  const activeMapNext = zones[safeProgress.currentZoneIndex + 1]?.label ?? "Final";
 
   function clearTransitionTimeout() {
     if (transitionTimeoutRef.current !== null) {
@@ -817,12 +835,6 @@ export default function App() {
   function continueFromReward() {
     clearTransitionTimeout();
     unlockAudio();
-
-    if (isExperienceComplete) {
-      setScreen("achievements");
-      return;
-    }
-
     setScreen("orientation");
   }
 
@@ -1007,11 +1019,6 @@ export default function App() {
     handleScan(manualCode);
   };
 
-  const orientationZoneIndex = completedZoneForMap ?? Math.max(safeProgress.currentZoneIndex - 1, 0);
-  const orientationImage = getOrientationImage(orientationZoneIndex);
-  const completedLabel = zones[orientationZoneIndex]?.label ?? "Recorrido";
-  const nextLabel = zones[orientationZoneIndex + 1]?.label ?? "Final";
-
   return (
     <main className="app-shell">
       <section className="phone-screen">
@@ -1077,14 +1084,22 @@ export default function App() {
         )}
 
         {screen === "map" && (
-          <section className="page-section">
+          <section className="page-section map-screen-section">
             <div className="page-title">
-              <span>Recorrido</span>
-              <h2>Mapa de misión</h2>
-              <p>Completá cada zona para avanzar.</p>
+              <span>Mapa</span>
+              <h2>{isExperienceComplete ? "Recorrido completo" : `Estás en ${activeMapZone}`}</h2>
+              <p>
+                {isExperienceComplete
+                  ? "Completaste todo el recorrido."
+                  : `Próximo destino: ${activeMapNext}.`}
+              </p>
             </div>
 
-            <div className="map-list">
+            <div className="orientation-map-card active-map-card">
+              <img src={activeMapImage} alt="Mapa del recorrido actual" />
+            </div>
+
+            <div className="map-list compact-map-list">
               {zones.map((zone, index) => {
                 const isActive = index === safeProgress.currentZoneIndex;
                 const isDone = isZoneComplete(safeProgress, zone);
@@ -1094,14 +1109,7 @@ export default function App() {
                   <button
                     className={`map-item ${isActive ? "active" : ""} ${isDone ? "done" : ""} ${isLocked ? "locked" : ""}`}
                     key={zone.id}
-                    disabled={isLocked || isDone}
-                    onClick={() => {
-                      if (!isLocked && !isDone) {
-                        clearTransitionTimeout();
-                        unlockAudio();
-                        setScreen("mission");
-                      }
-                    }}
+                    disabled
                   >
                     <div className="map-icon">
                       <img src={zone.icon} alt="" />
@@ -1109,11 +1117,17 @@ export default function App() {
 
                     <div className="map-info">
                       <strong>{zone.label}</strong>
-                      <span>{isDone ? "Completado" : isActive ? "Disponible" : "Bloqueado"}</span>
+                      <span>
+                        {isDone
+                          ? "Completado"
+                          : isActive
+                            ? "Estás acá"
+                            : "Bloqueado"}
+                      </span>
                     </div>
 
                     <div className="map-state">
-                      {isDone ? "✓" : isActive ? "→" : "×"}
+                      {isDone ? "✓" : isActive ? "●" : "×"}
                     </div>
                   </button>
                 );
@@ -1121,7 +1135,7 @@ export default function App() {
             </div>
 
             <button className="start-button compact" onClick={goToMission}>
-              <span>Ir a misión</span>
+              <span>{isExperienceComplete ? "Ver estado final" : "Ir a misión"}</span>
               <svg viewBox="0 0 40 40" aria-hidden="true">
                 <path d="M8 20h22" />
                 <path d="m22 11 9 9-9 9" />
@@ -1181,7 +1195,7 @@ export default function App() {
             </div>
 
             <button className="start-button compact" onClick={continueFromReward}>
-              <span>{isExperienceComplete ? "Ver álbum" : "Continuar"}</span>
+              <span>Continuar al mapa</span>
               <svg viewBox="0 0 40 40" aria-hidden="true">
                 <path d="M8 20h22" />
                 <path d="m22 11 9 9-9 9" />
