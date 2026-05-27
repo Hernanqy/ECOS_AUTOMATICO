@@ -1040,7 +1040,8 @@ export default function App() {
 
               <div className="guide-wrap">
                 <div className="speech-bubble">
-                  <strong>¡Hola!</strong><span>Soy el Profesor Echarpe, comencemos la aventura.</span>
+                  <strong>¡Hola!</strong><span>Soy el Profesor Echarpe,</span>
+                   <span className="hero-speech-line">Comencemos la aventura!</span>
                 </div>
 
                 <img className="guide-character" src="/personaje.png" alt="Guía de la experiencia" />
