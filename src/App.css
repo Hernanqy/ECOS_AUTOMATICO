@@ -3802,3 +3802,129 @@ button {
   }
 }
 
+
+/* =========================================================
+   HOME: REUBICAR PROFE ECHARPE SIN CORTAR NI SUPERPONER
+   ========================================================= */
+
+.guide-wrap {
+  position: relative !important;
+  width: 100% !important;
+  min-height: 250px !important;
+  display: grid !important;
+  grid-template-columns: 54% 46% !important;
+  align-items: end !important;
+  overflow: visible !important;
+  padding: 0 18px 0 22px !important;
+  box-sizing: border-box !important;
+}
+
+.speech-bubble {
+  position: relative !important;
+  left: auto !important;
+  bottom: auto !important;
+  grid-column: 1 !important;
+  align-self: center !important;
+  justify-self: start !important;
+  width: 100% !important;
+  max-width: 245px !important;
+  z-index: 4 !important;
+}
+
+.guide-character {
+  grid-column: 2 !important;
+  justify-self: center !important;
+  align-self: end !important;
+  width: min(42vw, 205px) !important;
+  max-height: 245px !important;
+  object-fit: contain !important;
+  object-position: bottom center !important;
+  transform: translateX(-8px) translateY(-4px) !important;
+  margin: 0 !important;
+  z-index: 2 !important;
+}
+
+/* Que el texto no sea tan ancho ni choque con el personaje */
+.speech-bubble strong {
+  font-size: clamp(24px, 5.4vw, 31px) !important;
+}
+
+.speech-bubble span {
+  font-size: clamp(14px, 3.6vw, 17px) !important;
+  line-height: 1.12 !important;
+}
+
+/* Ajuste de separación con recorrido */
+.route-card {
+  margin-top: -4px !important;
+}
+
+/* Pantallas bajas */
+@media (max-height: 760px) {
+  .guide-wrap {
+    min-height: 225px !important;
+    grid-template-columns: 55% 45% !important;
+    padding: 0 16px 0 20px !important;
+  }
+
+  .speech-bubble {
+    max-width: 230px !important;
+  }
+
+  .guide-character {
+    width: min(40vw, 190px) !important;
+    max-height: 220px !important;
+    transform: translateX(-6px) translateY(-4px) !important;
+  }
+
+  .speech-bubble strong {
+    font-size: 23px !important;
+  }
+
+  .speech-bubble span {
+    font-size: 13.5px !important;
+  }
+}
+
+/* Pantallas angostas */
+@media (max-width: 390px) {
+  .guide-wrap {
+    grid-template-columns: 56% 44% !important;
+    min-height: 215px !important;
+    padding: 0 12px 0 18px !important;
+  }
+
+  .speech-bubble {
+    max-width: 215px !important;
+  }
+
+  .guide-character {
+    width: min(39vw, 175px) !important;
+    max-height: 205px !important;
+    transform: translateX(-4px) translateY(-4px) !important;
+  }
+
+  .speech-bubble strong {
+    font-size: 22px !important;
+  }
+
+  .speech-bubble span {
+    font-size: 13px !important;
+  }
+}
+
+/* Pantallas muy angostas */
+@media (max-width: 350px) {
+  .guide-wrap {
+    grid-template-columns: 58% 42% !important;
+  }
+
+  .speech-bubble span {
+    font-size: 12.5px !important;
+  }
+
+  .guide-character {
+    width: 38vw !important;
+  }
+}
+
