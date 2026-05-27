@@ -3928,3 +3928,283 @@ button {
   }
 }
 
+
+/* =========================================================
+   HOME ORDENADO FINAL - COMPOSICIÓN PROLIJA
+   ========================================================= */
+
+/* Contenedor general del inicio */
+.hero-section {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 22px 22px 0 !important;
+  min-height: auto !important;
+  overflow: visible !important;
+}
+
+/* Título y bajada arriba, con buena proporción */
+.title-block {
+  position: relative !important;
+  z-index: 3 !important;
+}
+
+.title-block h1 {
+  font-size: clamp(42px, 11vw, 62px) !important;
+  line-height: 0.94 !important;
+  margin: 0 0 14px !important;
+}
+
+.title-block p {
+  max-width: 88% !important;
+  margin: 0 !important;
+  font-size: clamp(18px, 4.8vw, 24px) !important;
+  line-height: 1.16 !important;
+}
+
+/* Zona personaje + texto: dos columnas limpias */
+.guide-wrap {
+  position: relative !important;
+  z-index: 2 !important;
+  width: 100% !important;
+  min-height: 245px !important;
+  margin: 12px 0 0 !important;
+  padding: 0 4px !important;
+  box-sizing: border-box !important;
+
+  display: grid !important;
+  grid-template-columns: 52% 48% !important;
+  align-items: end !important;
+  overflow: visible !important;
+}
+
+/* Texto sin globo, ubicado en su lugar */
+.speech-bubble {
+  position: relative !important;
+  grid-column: 1 !important;
+  align-self: end !important;
+  justify-self: start !important;
+
+  left: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
+  max-width: 235px !important;
+  margin: 0 0 34px 0 !important;
+
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  opacity: 1 !important;
+  z-index: 5 !important;
+}
+
+.speech-bubble::before,
+.speech-bubble::after {
+  display: none !important;
+  content: none !important;
+}
+
+.speech-bubble strong {
+  display: block !important;
+  margin: 0 0 5px !important;
+  color: #0b63e5 !important;
+  font-size: clamp(24px, 5.4vw, 31px) !important;
+  line-height: 1 !important;
+  font-weight: 1000 !important;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.95) !important;
+}
+
+.speech-bubble span {
+  display: block !important;
+  margin: 0 !important;
+  color: #12315f !important;
+  font-size: clamp(14px, 3.6vw, 17px) !important;
+  line-height: 1.12 !important;
+  font-weight: 950 !important;
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Personaje dentro de pantalla y proporcionado */
+.guide-character {
+  grid-column: 2 !important;
+  justify-self: center !important;
+  align-self: end !important;
+
+  width: min(41vw, 195px) !important;
+  max-height: 235px !important;
+  object-fit: contain !important;
+  object-position: bottom center !important;
+
+  transform: translateX(-4px) translateY(-2px) !important;
+  margin: 0 !important;
+  z-index: 3 !important;
+}
+
+/* Recorrido debajo, sin pisar texto ni personaje */
+.route-card {
+  position: relative !important;
+  z-index: 1 !important;
+  margin: 14px 20px 118px !important;
+  padding: 14px 12px 16px !important;
+  border-radius: 26px !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 16px 42px rgba(0, 80, 200, 0.10) !important;
+  border: 1px solid rgba(0, 96, 255, 0.08) !important;
+  overflow: hidden !important;
+}
+
+/* Camino punteado ordenado dentro de la tarjeta */
+.route-path {
+  display: none !important;
+}
+
+.route-grid {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 4px !important;
+  align-items: start !important;
+  margin-bottom: 12px !important;
+}
+
+.route-grid::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 12.5% !important;
+  right: 12.5% !important;
+  top: 59px !important;
+  height: 16px !important;
+  background:
+    radial-gradient(circle, #0b63e5 0 3px, transparent 4px) left center / 18px 12px repeat-x !important;
+  opacity: 0.95 !important;
+  z-index: 0 !important;
+}
+
+.route-item {
+  position: relative !important;
+  z-index: 1 !important;
+  min-width: 0 !important;
+  display: grid !important;
+  justify-items: center !important;
+  gap: 4px !important;
+}
+
+.zone-icon {
+  width: 45px !important;
+  height: 45px !important;
+}
+
+.route-dot {
+  width: 14px !important;
+  height: 14px !important;
+  margin-top: 3px !important;
+  z-index: 2 !important;
+}
+
+.route-item strong {
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+
+/* Botón comenzar proporcionado */
+.start-button {
+  min-height: 48px !important;
+  max-width: 330px !important;
+  margin: 16px auto 0 !important;
+  border-radius: 20px !important;
+  font-size: 18px !important;
+  padding: 8px 18px !important;
+}
+
+/* Pantallas bajas */
+@media (max-height: 760px) {
+  .hero-section {
+    padding-top: 16px !important;
+  }
+
+  .guide-wrap {
+    min-height: 220px !important;
+    grid-template-columns: 53% 47% !important;
+    margin-top: 8px !important;
+  }
+
+  .speech-bubble {
+    max-width: 220px !important;
+    margin-bottom: 28px !important;
+  }
+
+  .speech-bubble strong {
+    font-size: 23px !important;
+  }
+
+  .speech-bubble span {
+    font-size: 13.5px !important;
+  }
+
+  .guide-character {
+    width: min(39vw, 180px) !important;
+    max-height: 215px !important;
+    transform: translateX(-2px) translateY(-2px) !important;
+  }
+
+  .route-card {
+    margin-top: 10px !important;
+    margin-bottom: 106px !important;
+  }
+
+  .zone-icon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .route-grid::before {
+    top: 55px !important;
+    background-size: 16px 12px !important;
+  }
+
+  .route-item strong {
+    font-size: 11px !important;
+  }
+
+  .start-button {
+    min-height: 44px !important;
+    max-width: 300px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* Pantallas angostas */
+@media (max-width: 390px) {
+  .guide-wrap {
+    grid-template-columns: 54% 46% !important;
+    min-height: 210px !important;
+  }
+
+  .speech-bubble {
+    max-width: 205px !important;
+    margin-bottom: 26px !important;
+  }
+
+  .speech-bubble strong {
+    font-size: 22px !important;
+  }
+
+  .speech-bubble span {
+    font-size: 13px !important;
+  }
+
+  .guide-character {
+    width: min(38vw, 165px) !important;
+    max-height: 198px !important;
+  }
+
+  .route-card {
+    margin-left: 16px !important;
+    margin-right: 16px !important;
+  }
+}
+
