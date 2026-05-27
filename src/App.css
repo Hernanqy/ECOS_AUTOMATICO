@@ -4208,3 +4208,127 @@ button {
   }
 }
 
+
+/* =========================================================
+   HOME: TEXTO HOLA ORDENADO SIN SUPERPOSICIÓN
+   ========================================================= */
+
+.guide-wrap {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  min-height: 255px !important;
+  margin-top: 12px !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.speech-bubble {
+  position: relative !important;
+  order: 1 !important;
+  left: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
+  max-width: 320px !important;
+  margin: 0 auto 8px !important;
+  padding: 0 !important;
+
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+
+  display: block !important;
+  text-align: left !important;
+  z-index: 5 !important;
+}
+
+.speech-bubble::before,
+.speech-bubble::after {
+  display: none !important;
+  content: none !important;
+}
+
+.speech-bubble strong {
+  display: block !important;
+  margin: 0 0 4px !important;
+  color: #0b63e5 !important;
+  font-size: clamp(24px, 5.5vw, 32px) !important;
+  line-height: 1 !important;
+  font-weight: 1000 !important;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.95) !important;
+}
+
+.speech-bubble span {
+  display: block !important;
+  margin: 0 !important;
+  color: #12315f !important;
+  font-size: clamp(15px, 4vw, 19px) !important;
+  line-height: 1.16 !important;
+  font-weight: 950 !important;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.95) !important;
+}
+
+.guide-character {
+  order: 2 !important;
+  position: relative !important;
+  width: min(48vw, 210px) !important;
+  max-height: 215px !important;
+  object-fit: contain !important;
+  object-position: bottom center !important;
+  transform: translateX(36px) translateY(0) !important;
+  margin: 0 auto !important;
+  z-index: 3 !important;
+}
+
+/* La tarjeta baja un poco para respirar */
+.route-card {
+  margin-top: 18px !important;
+}
+
+/* Pantallas bajas */
+@media (max-height: 760px) {
+  .guide-wrap {
+    min-height: 225px !important;
+    margin-top: 8px !important;
+  }
+
+  .speech-bubble {
+    max-width: 300px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .speech-bubble strong {
+    font-size: 23px !important;
+  }
+
+  .speech-bubble span {
+    font-size: 14px !important;
+  }
+
+  .guide-character {
+    width: min(44vw, 185px) !important;
+    max-height: 185px !important;
+    transform: translateX(34px) translateY(0) !important;
+  }
+
+  .route-card {
+    margin-top: 14px !important;
+  }
+}
+
+/* Pantallas angostas */
+@media (max-width: 390px) {
+  .speech-bubble {
+    max-width: 280px !important;
+  }
+
+  .guide-character {
+    width: min(43vw, 170px) !important;
+    max-height: 175px !important;
+    transform: translateX(30px) translateY(0) !important;
+  }
+}
+
