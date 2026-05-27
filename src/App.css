@@ -3727,3 +3727,78 @@ button {
   }
 }
 
+
+/* =========================================================
+   CORREGIR PERSONAJE HOME DENTRO DE PANTALLA
+   ========================================================= */
+
+.guide-wrap {
+  position: relative !important;
+  width: 100% !important;
+  min-height: 260px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: flex-end !important;
+  overflow: hidden !important;
+  padding-right: 8px !important;
+  box-sizing: border-box !important;
+}
+
+.guide-character {
+  width: min(46vw, 220px) !important;
+  max-height: 255px !important;
+  object-fit: contain !important;
+  object-position: bottom right !important;
+  transform: translateX(0) translateY(-8px) !important;
+  margin-right: 0 !important;
+  z-index: 2 !important;
+}
+
+.speech-bubble {
+  left: 18px !important;
+  bottom: 62px !important;
+  width: min(48vw, 230px) !important;
+  max-width: 230px !important;
+  z-index: 4 !important;
+}
+
+/* Pantallas bajas */
+@media (max-height: 760px) {
+  .guide-wrap {
+    min-height: 235px !important;
+    padding-right: 6px !important;
+  }
+
+  .guide-character {
+    width: min(44vw, 205px) !important;
+    max-height: 230px !important;
+    transform: translateX(0) translateY(-8px) !important;
+  }
+
+  .speech-bubble {
+    left: 16px !important;
+    bottom: 56px !important;
+    width: min(47vw, 215px) !important;
+    max-width: 215px !important;
+  }
+}
+
+/* Pantallas angostas */
+@media (max-width: 390px) {
+  .guide-wrap {
+    padding-right: 4px !important;
+  }
+
+  .guide-character {
+    width: min(43vw, 190px) !important;
+    max-height: 215px !important;
+    transform: translateX(0) translateY(-8px) !important;
+  }
+
+  .speech-bubble {
+    left: 15px !important;
+    width: min(48vw, 205px) !important;
+    max-width: 205px !important;
+  }
+}
+
