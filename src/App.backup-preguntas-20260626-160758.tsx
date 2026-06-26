@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
 type Screen =
@@ -125,107 +125,107 @@ const rewards: Record<ZoneId, Reward> = {
 const questions: Record<string, EcoQuestion> = {
   M1: {
     code: "M1",
-    title: "Eco del Toxodón",
-    question: "Buscá el nombre del animal parecido al hipopótamo.",
+    title: "Eco de la megafauna",
+    question: "¿Qué nos ayudan a conocer los fósiles?",
     options: [
-      { id: "A", text: "Gliptodonte" },
-      { id: "B", text: "Macrauquenia" },
-      { id: "C", text: "Toxodón" }
+      { id: "A", text: "Autos antiguos" },
+      { id: "B", text: "Animales que vivieron en el pasado" },
+      { id: "C", text: "Planetas lejanos" }
     ],
-    correctOptionId: "C",
-    successText: "¡Correcto! El Toxodón fue un gran mamífero prehistórico parecido al hipopótamo.",
-    errorText: "Casi. Buscá bien el nombre del animal parecido al hipopótamo."
+    correctOptionId: "B",
+    successText: "¡Correcto! Los fósiles guardan pistas del pasado.",
+    errorText: "Casi. Mirá la sala y probá otra vez."
   },
   M2: {
     code: "M2",
-    title: "Eco del Sistema Solar",
-    question: "¿Cuándo se formó y evolucionó el Sistema Solar?",
+    title: "Eco de la ciencia",
+    question: "¿Qué hace una científica cuando encuentra una pista?",
     options: [
-      { id: "A", text: "Hace 20.000 años" },
-      { id: "B", text: "Hace 4.600 millones de años" },
-      { id: "C", text: "Hace 3.500 millones de años" }
+      { id: "A", text: "La esconde" },
+      { id: "B", text: "La ignora" },
+      { id: "C", text: "La observa e investiga" }
     ],
-    correctOptionId: "B",
-    successText: "¡Muy bien! El Sistema Solar se formó hace aproximadamente 4.600 millones de años.",
-    errorText: "Probá otra vez. Pensá en una escala de tiempo mucho más antigua."
+    correctOptionId: "C",
+    successText: "¡Muy bien! Observar es el primer paso para descubrir.",
+    errorText: "Probá otra vez. Pensá cómo trabaja la ciencia."
   },
   L1: {
     code: "L1",
-    title: "Eco del carpincho",
-    question: "Vivo cerca del agua, nado sin ser pez, soy tranquilo y bigotón. ¿Quién soy?",
+    title: "Eco del lago",
+    question: "¿Qué animal suele vivir cerca del agua y la vegetación?",
     options: [
-      { id: "A", text: "Tortuga" },
-      { id: "B", text: "Lechuza" },
-      { id: "C", text: "Carpincho" }
+      { id: "A", text: "Carpincho" },
+      { id: "B", text: "Camello" },
+      { id: "C", text: "Pingüino" }
     ],
-    correctOptionId: "C",
-    successText: "¡Correcto! El carpincho vive cerca del agua y es parte de estos ambientes.",
-    errorText: "Casi. Pensá en un animal tranquilo, bigotón y muy cercano a las lagunas."
+    correctOptionId: "A",
+    successText: "¡Correcto! El carpincho es parte de estos ambientes.",
+    errorText: "Casi. Pensá en un animal de lagunas y orillas."
   },
   L2: {
     code: "L2",
-    title: "Eco del lago",
-    question: "¿Cómo se llama el lago que ves?",
+    title: "Eco de las aves",
+    question: "¿Qué hacen muchas aves en los árboles del entorno?",
     options: [
-      { id: "A", text: "El Resplandor" },
-      { id: "B", text: "Jacques Cousteau" },
-      { id: "C", text: "Pampa" }
+      { id: "A", text: "Construyen autos" },
+      { id: "B", text: "Buscan refugio, alimento o descanso" },
+      { id: "C", text: "Viven bajo tierra siempre" }
     ],
     correctOptionId: "B",
-    successText: "¡Excelente! El lago se llama Jacques Cousteau.",
-    errorText: "Probá otra vez. Mirá bien el nombre del lago."
+    successText: "¡Excelente! Los árboles son refugio para muchas aves.",
+    errorText: "Probá otra vez. Observá el entorno del lago."
   },
   CO1: {
     code: "CO1",
     title: "Eco del cóndor",
-    question: "¿Cuánto puede vivir un cóndor?",
+    question: "¿Qué ave representa la altura y los vuelos planeados?",
     options: [
-      { id: "A", text: "70 años" },
-      { id: "B", text: "40 años" },
-      { id: "C", text: "20 años" }
+      { id: "A", text: "Gallina" },
+      { id: "B", text: "Pato doméstico" },
+      { id: "C", text: "Cóndor andino" }
     ],
-    correctOptionId: "A",
-    successText: "¡Correcto! Un cóndor puede vivir alrededor de 70 años.",
-    errorText: "Casi. Pensá en un ave muy longeva."
+    correctOptionId: "C",
+    successText: "¡Correcto! Olavarría, tierra de cóndores.",
+    errorText: "Casi. Pensá en el ave protagonista de esta zona."
   },
   CO2: {
     code: "CO2",
-    title: "Eco del ñandú",
-    question: "No me busques en el agua, ni arriba de una rama. Mirá bien a tu alrededor: tengo patas largas, corro veloz, pero aunque tengo alas… no vuelo. ¿Quién soy?",
+    title: "Eco del territorio",
+    question: "¿Qué necesitamos hacer para cuidar a las aves y su ambiente?",
     options: [
-      { id: "A", text: "Ñandú" },
-      { id: "B", text: "Carpincho" },
-      { id: "C", text: "Lechuza" }
+      { id: "A", text: "Respetar el lugar y no molestar a los animales" },
+      { id: "B", text: "Hacer mucho ruido siempre" },
+      { id: "C", text: "Tirar residuos" }
     ],
     correctOptionId: "A",
-    successText: "¡Muy bien! El ñandú corre veloz, tiene alas, pero no vuela.",
-    errorText: "Probá otra vez. Pensá en un ave grande de patas largas que corre rápido."
+    successText: "¡Muy bien! Cuidar el ambiente también es parte de la misión.",
+    errorText: "Probá otra vez. Pensá en una acción de cuidado."
   },
   CA1: {
     code: "CA1",
-    title: "Eco de la yarará",
-    question: "En mi cuerpo llevo dibujos que parecen una cruz al mirar. ¿Quién soy?",
+    title: "Eco de la casona",
+    question: "¿Qué guarda un edificio antiguo como la Casona?",
     options: [
-      { id: "A", text: "Yarará grande" },
-      { id: "B", text: "Tortuga" },
-      { id: "C", text: "Lagarto" }
+      { id: "A", text: "Naves espaciales" },
+      { id: "B", text: "Historias y memorias del lugar" },
+      { id: "C", text: "Solo cosas nuevas" }
     ],
-    correctOptionId: "A",
-    successText: "¡Correcto! La yarará grande tiene dibujos característicos que pueden parecer cruces.",
-    errorText: "Casi. Observá cuál animal tiene dibujos con forma de cruz."
+    correctOptionId: "B",
+    successText: "¡Correcto! La Casona también guarda memoria.",
+    errorText: "Casi. Pensá en el paso del tiempo."
   },
   CA2: {
     code: "CA2",
-    title: "Eco de la Casona",
-    question: "Tengo paredes antiguas y memoria de estancia. Buscá en mi historia el año inicial: ¿desde cuándo esta casona nos mira pasar?",
+    title: "Eco del recorrido",
+    question: "¿Qué hiciste durante toda la experiencia?",
     options: [
-      { id: "A", text: "1877" },
-      { id: "B", text: "1979" },
-      { id: "C", text: "2024" }
+      { id: "A", text: "Ignoré las pistas" },
+      { id: "B", text: "Me quedé quieto sin mirar" },
+      { id: "C", text: "Exploré, observé y descubrí ecos" }
     ],
-    correctOptionId: "A",
-    successText: "¡Excelente! La Casona conserva memoria desde 1877.",
-    errorText: "Probá otra vez. Buscá el año inicial en la historia de la Casona."
+    correctOptionId: "C",
+    successText: "¡Excelente! Completaste el recorrido con atención.",
+    errorText: "Probá otra vez. Pensá en todo lo que hiciste en la aventura."
   }
 };
 
