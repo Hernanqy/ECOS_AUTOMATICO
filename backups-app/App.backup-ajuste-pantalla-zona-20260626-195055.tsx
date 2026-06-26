@@ -61,7 +61,7 @@ const zones: Zone[] = [
     id: "museo",
     label: "Museo",
     title: "Ecos del pasado",
-    mission: "",
+    mission: "Buscá 2 ecos en las salas.",
     success: "¡Museo completo! Ganaste una estampa.",
     icon: "/icons/museo.png",
     codes: ["M1", "M2"]

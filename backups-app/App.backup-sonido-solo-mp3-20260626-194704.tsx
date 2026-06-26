@@ -61,7 +61,7 @@ const zones: Zone[] = [
     id: "museo",
     label: "Museo",
     title: "Ecos del pasado",
-    mission: "",
+    mission: "Buscá 2 ecos en las salas.",
     success: "¡Museo completo! Ganaste una estampa.",
     icon: "/icons/museo.png",
     codes: ["M1", "M2"]
@@ -443,22 +443,100 @@ function NavIcon({ type }: { type: "inicio" | "mapa" | "eco" | "logros" | "menu"
 
 
 function playVictorySound() {
+  const playFallbackTone = () => {
+    try {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+
+      if (!AudioContextClass) {
+        return;
+      }
+
+      const audioContext = new AudioContextClass();
+      const now = audioContext.currentTime;
+
+      const notes = [
+        { frequency: 523.25, start: 0.00, duration: 0.13 },
+        { frequency: 659.25, start: 0.13, duration: 0.13 },
+        { frequency: 783.99, start: 0.26, duration: 0.16 },
+        { frequency: 1046.5, start: 0.44, duration: 0.34 }
+      ];
+
+      const masterGain = audioContext.createGain();
+      masterGain.gain.setValueAtTime(0.20, now);
+      masterGain.connect(audioContext.destination);
+
+      notes.forEach((note) => {
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        oscillator.type = "triangle";
+        oscillator.frequency.setValueAtTime(note.frequency, now + note.start);
+
+        gain.gain.setValueAtTime(0.001, now + note.start);
+        gain.gain.exponentialRampToValueAtTime(0.24, now + note.start + 0.025);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + note.start + note.duration);
+
+        oscillator.connect(gain);
+        gain.connect(masterGain);
+
+        oscillator.start(now + note.start);
+        oscillator.stop(now + note.start + note.duration + 0.04);
+      });
+
+      window.setTimeout(() => {
+        audioContext.close().catch(() => {});
+      }, 1300);
+    } catch (error) {
+      console.error("No se pudo reproducir el sonido de respaldo", error);
+    }
+  };
+
   try {
-    const audio = new Audio("/sounds/victoria.mp3?v=" + Date.now());
-    audio.volume = 0.85;
+    const audio = new Audio("/sounds/victoria.mp3");
+    audio.volume = 0.75;
 
     const playPromise = audio.play();
 
     if (playPromise) {
-      playPromise.catch((error) => {
-        console.warn("No se pudo reproducir victoria.mp3", error);
+      playPromise.catch(() => {
+        playFallbackTone();
       });
     }
   } catch (error) {
-    console.warn("No se pudo preparar victoria.mp3", error);
+    playFallbackTone();
   }
 }
 
+
+function ConfettiBurst() {
+  const pieces = Array.from({ length: 72 }, (_, index) => index);
+
+  return (
+    <div className="confetti-burst" aria-hidden="true">
+      {pieces.map((piece) => (
+        <span key={piece} className={"confetti-piece confetti-piece-" + ((piece % 12) + 1)} />
+      ))}
+    </div>
+  );
+}
+
+function downloadExperienceRatings() {
+  try {
+    const raw = localStorage.getItem("ecos-experience-ratings") || "[]";
+    const blob = new Blob([raw], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "ecos-calificaciones.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("No se pudieron descargar las calificaciones", error);
+  }
+}
 
 function Header() {
   return (
@@ -870,7 +948,7 @@ export default function App() {
     });
 
     if (completedAllZones) {
-      // El sonido final se reproduce solo al abrir el álbum con victoria.mp3.
+      playSound("final");
     } else if (zoneCompleted) {
       playSound("zone");
     } else {
@@ -1196,8 +1274,6 @@ export default function App() {
     clearTransitionTimeout();
     stopScanner();
     resetStoredProgress();
-    localStorage.removeItem("ecos-experience-rating-submitted");
-    setFeedbackSubmitted(false);
     setCompletedZoneForMap(null);
     setRewardZoneId(null);
     setPendingCode("");
