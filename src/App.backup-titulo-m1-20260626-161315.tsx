@@ -125,7 +125,7 @@ const rewards: Record<ZoneId, Reward> = {
 const questions: Record<string, EcoQuestion> = {
   M1: {
     code: "M1",
-    title: "Eco de la megafauna",
+    title: "Eco del Toxodón",
     question: "Buscá el nombre del animal parecido al hipopótamo.",
     options: [
       { id: "A", text: "Gliptodonte" },
