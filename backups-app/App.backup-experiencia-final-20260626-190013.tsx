@@ -440,37 +440,6 @@ function NavIcon({ type }: { type: "inicio" | "mapa" | "eco" | "logros" | "menu"
   );
 }
 
-
-function ConfettiBurst() {
-  const pieces = Array.from({ length: 34 }, (_, index) => index);
-
-  return (
-    <div className="confetti-burst" aria-hidden="true">
-      {pieces.map((piece) => (
-        <span key={piece} className={"confetti-piece confetti-piece-" + ((piece % 12) + 1)} />
-      ))}
-    </div>
-  );
-}
-
-function downloadExperienceRatings() {
-  try {
-    const raw = localStorage.getItem("ecos-experience-ratings") || "[]";
-    const blob = new Blob([raw], { type: "application/json;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = "ecos-calificaciones.json";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error("No se pudieron descargar las calificaciones", error);
-  }
-}
-
 function Header() {
   return (
     <header className="top-brand minimal-brand">
@@ -535,14 +504,6 @@ export default function App() {
   const [pendingCode, setPendingCode] = useState("");
   const [questionFeedback, setQuestionFeedback] = useState("");
   const [questionLocked, setQuestionLocked] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [feedbackSubmitted, setFeedbackSubmitted] = useState(() => {
-    try {
-      return localStorage.getItem("ecos-experience-rating-submitted") === "true";
-    } catch {
-      return false;
-    }
-  });
   const [isNavVisible, setIsNavVisible] = useState(false);
 
   const scannerRef = useRef<any>(null);
@@ -550,8 +511,6 @@ export default function App() {
   const qrReadRef = useRef(false);
   const hasProcessedUrlRef = useRef(false);
   const transitionTimeoutRef = useRef<number | null>(null);
-  const celebrationTimeoutRef = useRef<number | null>(null);
-  const hasCelebratedFinalRef = useRef(false);
   const bottomNavTimeoutRef = useRef<number | null>(null);
   const screenTopRef = useRef<HTMLDivElement | null>(null);
 
@@ -587,43 +546,6 @@ export default function App() {
   function safeSetProgress(nextProgress: GameProgress) {
     setProgress(normalizeProgress(nextProgress));
   }
-  function celebrateFinalMoment() {
-    setShowConfetti(true);
-
-    if (celebrationTimeoutRef.current !== null) {
-      window.clearTimeout(celebrationTimeoutRef.current);
-    }
-
-    celebrationTimeoutRef.current = window.setTimeout(() => {
-      setShowConfetti(false);
-      celebrationTimeoutRef.current = null;
-    }, 1900);
-  }
-
-  function submitExperienceRating(value: number, label = "") {
-    try {
-      const stored = localStorage.getItem("ecos-experience-ratings");
-      const ratings = stored ? JSON.parse(stored) : [];
-
-      const entry = {
-        id: Date.now(),
-        rating: value,
-        ratingLabel: label,
-        createdAt: new Date().toISOString(),
-        screen,
-        progress
-      };
-
-      ratings.push(entry);
-
-      localStorage.setItem("ecos-experience-ratings", JSON.stringify(ratings, null, 2));
-      localStorage.setItem("ecos-experience-rating-submitted", "true");
-      setFeedbackSubmitted(true);
-    } catch (error) {
-      console.error("No se pudo guardar la calificación", error);
-    }
-  }
-
   function showBottomNav(delay = 1000) {
     setIsNavVisible(true);
 
@@ -988,27 +910,6 @@ export default function App() {
   useEffect(() => {
     showBottomNav(1200);
   }, [screen]);
-
-  useEffect(() => {
-    const isFinalCelebrationMoment = isExperienceComplete && (screen === "album" || screen === "map");
-
-    if (isFinalCelebrationMoment && !hasCelebratedFinalRef.current) {
-      hasCelebratedFinalRef.current = true;
-      celebrateFinalMoment();
-    }
-
-    if (!isExperienceComplete) {
-      hasCelebratedFinalRef.current = false;
-    }
-  }, [screen, isExperienceComplete]);
-
-  useEffect(() => {
-    return () => {
-      if (celebrationTimeoutRef.current !== null) {
-        window.clearTimeout(celebrationTimeoutRef.current);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     saveProgress(progress);
@@ -1519,48 +1420,6 @@ export default function App() {
             <button className="menu-button" onClick={goToHome}>Volver al inicio</button>
             <button className="menu-button" onClick={goToMap}>Ver recorrido</button>
             <button className="danger-button" onClick={resetGame}>Reiniciar juego</button>
-          </section>
-        )}
-
-
-        {showConfetti && <ConfettiBurst />}
-
-        {isExperienceComplete && (screen === "album" || screen === "map") && (
-          <section className="end-feedback-section" aria-label="Calificar experiencia">
-            <div className="end-feedback-card">
-              <span className="end-feedback-kicker">¡Misión completada!</span>
-              <h2>Gracias por explorar La Máxima</h2>
-              <p>
-                Tu opinión nos ayuda a mejorar esta experiencia para otros visitantes.
-              </p>
-
-              {feedbackSubmitted ? (
-                <div className="feedback-saved">
-                  <strong>¡Gracias por tu calificación!</strong>
-                  <button className="feedback-download-button" onClick={downloadExperienceRatings}>
-                    Descargar respuestas de este dispositivo
-                  </button>
-                </div>
-              ) : (
-                <div className="rating-buttons rating-faces" role="group" aria-label="Calificación de la experiencia">
-                  {[
-                    { value: 1, label: "Regular", face: "😐" },
-                    { value: 2, label: "Buena", face: "🙂" },
-                    { value: 3, label: "Muy buena", face: "😄" }
-                  ].map((option) => (
-                    <button
-                      key={option.value}
-                      className="rating-button rating-face-button"
-                      onClick={() => submitExperienceRating(option.value, option.label)}
-                      aria-label={"Calificar como " + option.label}
-                    >
-                      <span className="rating-face">{option.face}</span>
-                      <small>{option.label}</small>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
           </section>
         )}
 

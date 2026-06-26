@@ -600,7 +600,7 @@ export default function App() {
     }, 1900);
   }
 
-  function submitExperienceRating(value: number, label = "") {
+  function submitExperienceRating(value: number) {
     try {
       const stored = localStorage.getItem("ecos-experience-ratings");
       const ratings = stored ? JSON.parse(stored) : [];
@@ -608,7 +608,6 @@ export default function App() {
       const entry = {
         id: Date.now(),
         rating: value,
-        ratingLabel: label,
         createdAt: new Date().toISOString(),
         screen,
         progress
@@ -1542,20 +1541,16 @@ export default function App() {
                   </button>
                 </div>
               ) : (
-                <div className="rating-buttons rating-faces" role="group" aria-label="Calificación de la experiencia">
-                  {[
-                    { value: 1, label: "Regular", face: "😐" },
-                    { value: 2, label: "Buena", face: "🙂" },
-                    { value: 3, label: "Muy buena", face: "😄" }
-                  ].map((option) => (
+                <div className="rating-buttons" role="group" aria-label="Calificación de la experiencia">
+                  {[1, 2, 3, 4, 5].map((value) => (
                     <button
-                      key={option.value}
-                      className="rating-button rating-face-button"
-                      onClick={() => submitExperienceRating(option.value, option.label)}
-                      aria-label={"Calificar como " + option.label}
+                      key={value}
+                      className="rating-button"
+                      onClick={() => submitExperienceRating(value)}
+                      aria-label={"Calificar con " + value + " estrellas"}
                     >
-                      <span className="rating-face">{option.face}</span>
-                      <small>{option.label}</small>
+                      <span>{value}</span>
+                      <small>★</small>
                     </button>
                   ))}
                 </div>
