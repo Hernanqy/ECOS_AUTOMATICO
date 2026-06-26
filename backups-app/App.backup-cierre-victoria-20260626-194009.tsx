@@ -441,73 +441,6 @@ function NavIcon({ type }: { type: "inicio" | "mapa" | "eco" | "logros" | "menu"
 }
 
 
-
-function playVictorySound() {
-  const playFallbackTone = () => {
-    try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-
-      if (!AudioContextClass) {
-        return;
-      }
-
-      const audioContext = new AudioContextClass();
-      const now = audioContext.currentTime;
-
-      const notes = [
-        { frequency: 523.25, start: 0.00, duration: 0.13 },
-        { frequency: 659.25, start: 0.13, duration: 0.13 },
-        { frequency: 783.99, start: 0.26, duration: 0.16 },
-        { frequency: 1046.5, start: 0.44, duration: 0.34 }
-      ];
-
-      const masterGain = audioContext.createGain();
-      masterGain.gain.setValueAtTime(0.20, now);
-      masterGain.connect(audioContext.destination);
-
-      notes.forEach((note) => {
-        const oscillator = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-
-        oscillator.type = "triangle";
-        oscillator.frequency.setValueAtTime(note.frequency, now + note.start);
-
-        gain.gain.setValueAtTime(0.001, now + note.start);
-        gain.gain.exponentialRampToValueAtTime(0.24, now + note.start + 0.025);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + note.start + note.duration);
-
-        oscillator.connect(gain);
-        gain.connect(masterGain);
-
-        oscillator.start(now + note.start);
-        oscillator.stop(now + note.start + note.duration + 0.04);
-      });
-
-      window.setTimeout(() => {
-        audioContext.close().catch(() => {});
-      }, 1300);
-    } catch (error) {
-      console.error("No se pudo reproducir el sonido de respaldo", error);
-    }
-  };
-
-  try {
-    const audio = new Audio("/sounds/victoria.mp3");
-    audio.volume = 0.75;
-
-    const playPromise = audio.play();
-
-    if (playPromise) {
-      playPromise.catch(() => {
-        playFallbackTone();
-      });
-    }
-  } catch (error) {
-    playFallbackTone();
-  }
-}
-
-
 function ConfettiBurst() {
   const pieces = Array.from({ length: 72 }, (_, index) => index);
 
@@ -619,7 +552,6 @@ export default function App() {
   const transitionTimeoutRef = useRef<number | null>(null);
   const celebrationTimeoutRef = useRef<number | null>(null);
   const lastCelebratedMomentRef = useRef("");
-  const hasPlayedVictorySoundRef = useRef(false);
   const bottomNavTimeoutRef = useRef<number | null>(null);
   const screenTopRef = useRef<HTMLDivElement | null>(null);
 
@@ -1065,21 +997,13 @@ export default function App() {
 
     if (finalScreenKey && lastCelebratedMomentRef.current !== finalScreenKey) {
       lastCelebratedMomentRef.current = finalScreenKey;
-
-      if (finalScreenKey === "achievements" && !hasPlayedVictorySoundRef.current) {
-        hasPlayedVictorySoundRef.current = true;
-        playVictorySound();
-      }
-
       celebrateFinalMoment();
     }
 
     if (!isExperienceComplete) {
       lastCelebratedMomentRef.current = "";
-      hasPlayedVictorySoundRef.current = false;
     }
   }, [screen, isExperienceComplete]);
-
 
 
   useEffect(() => {
@@ -1089,22 +1013,6 @@ export default function App() {
       }
     };
   }, []);
-
-  useEffect(() => {
-    if (!isExperienceComplete || screen !== "reward") {
-      return;
-    }
-
-    const autoOpenFinalAlbum = window.setTimeout(() => {
-      clearTransitionTimeout();
-      unlockAudio();
-      setScreen("achievements");
-    }, 1250);
-
-    return () => {
-      window.clearTimeout(autoOpenFinalAlbum);
-    };
-  }, [isExperienceComplete, screen]);
 
   useEffect(() => {
     saveProgress(progress);
@@ -1625,9 +1533,9 @@ export default function App() {
           <section className="end-feedback-section" aria-label="Calificar experiencia">
             <div className="end-feedback-card">
               <span className="end-feedback-kicker">¡Misión completada!</span>
-              <h2>¡Completaste tu álbum!</h2>
+              <h2>Gracias por explorar La Máxima</h2>
               <p>
-                Gracias por jugar y descubrir los ecos de La Máxima. ¿Cómo fue tu experiencia?
+                Tu opinión nos ayuda a mejorar esta experiencia para otros visitantes.
               </p>
 
               {feedbackSubmitted ? (
