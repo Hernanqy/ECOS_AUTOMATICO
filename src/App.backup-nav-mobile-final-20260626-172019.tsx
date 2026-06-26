@@ -908,10 +908,6 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    showBottomNav(1200);
-  }, [screen]);
-
-  useEffect(() => {
     saveProgress(progress);
   }, [progress]);
 
@@ -1425,36 +1421,29 @@ export default function App() {
 
         <InstitutionalFooter />
 
-        <div
-          className="ecos-nav-touch-zone"
-          aria-hidden="true"
-          onPointerDown={() => showBottomNav(1800)}
-          onTouchStart={() => showBottomNav(1800)}
-        />
-
         <nav
-          className={`ecos-bottom-nav ${isNavVisible ? "is-visible" : "is-hidden"}`}
+          className={`bottom-nav ${isNavVisible ? "nav-visible" : "nav-hidden"}`}
           aria-label="Navegación principal"
-          onPointerDown={() => showBottomNav(2000)}
+          onPointerEnter={() => showBottomNav(1800)}
           onPointerMove={() => showBottomNav(1800)}
-          onFocusCapture={() => showBottomNav(2000)}
-        >
-          <button className={`ecos-nav-item ${screen === "home" ? "is-active" : ""}`} onClick={goToHome}>
+          onFocusCapture={() => showBottomNav(1800)}
+        >'
+          <button className={`nav-item ${screen === "home" ? "active" : ""}`} onClick={goToHome}>
             <NavIcon type="inicio" />
             <span>Inicio</span>
           </button>
 
-          <button className={`ecos-nav-item ${screen === "map" || screen === "orientation" ? "is-active" : ""}`} onClick={goToMap}>
+          <button className={`nav-item ${screen === "map" || screen === "orientation" ? "active" : ""}`} onClick={goToMap}>
             <NavIcon type="mapa" />
             <span>Mapa</span>
           </button>
 
-          <button className="ecos-scan-button" onClick={goToScanner}>
+          <button className="scan-nav" onClick={goToScanner}>
             <NavIcon type="eco" />
           </button>
 
           <button
-            className={`ecos-nav-item ${screen === "achievements" ? "is-active" : ""}`}
+            className={`nav-item ${screen === "achievements" ? "active" : ""}`}
             onClick={() => {
               clearTransitionTimeout();
               unlockAudio();
@@ -1466,7 +1455,7 @@ export default function App() {
           </button>
 
           <button
-            className={`ecos-nav-item ${screen === "menu" ? "is-active" : ""}`}
+            className={`nav-item ${screen === "menu" ? "active" : ""}`}
             onClick={() => {
               clearTransitionTimeout();
               unlockAudio();

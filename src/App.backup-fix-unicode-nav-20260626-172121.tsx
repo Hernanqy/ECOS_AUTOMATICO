@@ -1433,18 +1433,18 @@ export default function App() {
         />
 
         <nav
-          className={`ecos-bottom-nav ${isNavVisible ? "is-visible" : "is-hidden"}`}
+          className={\`ecos-bottom-nav \${isNavVisible ? "is-visible" : "is-hidden"}\`}
           aria-label="Navegación principal"
           onPointerDown={() => showBottomNav(2000)}
           onPointerMove={() => showBottomNav(1800)}
           onFocusCapture={() => showBottomNav(2000)}
         >
-          <button className={`ecos-nav-item ${screen === "home" ? "is-active" : ""}`} onClick={goToHome}>
+          <button className={\`ecos-nav-item \${screen === "home" ? "is-active" : ""}\`} onClick={goToHome}>
             <NavIcon type="inicio" />
             <span>Inicio</span>
           </button>
 
-          <button className={`ecos-nav-item ${screen === "map" || screen === "orientation" ? "is-active" : ""}`} onClick={goToMap}>
+          <button className={\`ecos-nav-item \${screen === "map" || screen === "orientation" ? "is-active" : ""}\`} onClick={goToMap}>
             <NavIcon type="mapa" />
             <span>Mapa</span>
           </button>
@@ -1454,7 +1454,7 @@ export default function App() {
           </button>
 
           <button
-            className={`ecos-nav-item ${screen === "achievements" ? "is-active" : ""}`}
+            className={\`ecos-nav-item \${screen === "achievements" ? "is-active" : ""}\`}
             onClick={() => {
               clearTransitionTimeout();
               unlockAudio();
@@ -1466,7 +1466,7 @@ export default function App() {
           </button>
 
           <button
-            className={`ecos-nav-item ${screen === "menu" ? "is-active" : ""}`}
+            className={\`ecos-nav-item \${screen === "menu" ? "is-active" : ""}\`}
             onClick={() => {
               clearTransitionTimeout();
               unlockAudio();
