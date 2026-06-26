@@ -504,14 +504,12 @@ export default function App() {
   const [pendingCode, setPendingCode] = useState("");
   const [questionFeedback, setQuestionFeedback] = useState("");
   const [questionLocked, setQuestionLocked] = useState(false);
-  const [isNavVisible, setIsNavVisible] = useState(false);
 
   const scannerRef = useRef<any>(null);
   const scannerRunningRef = useRef(false);
   const qrReadRef = useRef(false);
   const hasProcessedUrlRef = useRef(false);
   const transitionTimeoutRef = useRef<number | null>(null);
-  const bottomNavTimeoutRef = useRef<number | null>(null);
   const screenTopRef = useRef<HTMLDivElement | null>(null);
 
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -546,19 +544,6 @@ export default function App() {
   function safeSetProgress(nextProgress: GameProgress) {
     setProgress(normalizeProgress(nextProgress));
   }
-  function showBottomNav(delay = 1000) {
-    setIsNavVisible(true);
-
-    if (bottomNavTimeoutRef.current !== null) {
-      window.clearTimeout(bottomNavTimeoutRef.current);
-    }
-
-    bottomNavTimeoutRef.current = window.setTimeout(() => {
-      setIsNavVisible(false);
-      bottomNavTimeoutRef.current = null;
-    }, delay);
-  }
-
 
   function getAudioContext() {
     if (!audioContextRef.current) {
@@ -884,28 +869,6 @@ export default function App() {
       window.clearTimeout(timeout);
     };
   }, [screen, pendingCode, rewardZoneId, completedZoneForMap]);
-
-  useEffect(() => {
-    const handleBottomNavActivity = () => {
-      showBottomNav(1000);
-    };
-
-    window.addEventListener("scroll", handleBottomNavActivity, { passive: true });
-    window.addEventListener("wheel", handleBottomNavActivity, { passive: true });
-    window.addEventListener("touchmove", handleBottomNavActivity, { passive: true });
-    window.addEventListener("keydown", handleBottomNavActivity);
-
-    return () => {
-      window.removeEventListener("scroll", handleBottomNavActivity);
-      window.removeEventListener("wheel", handleBottomNavActivity);
-      window.removeEventListener("touchmove", handleBottomNavActivity);
-      window.removeEventListener("keydown", handleBottomNavActivity);
-
-      if (bottomNavTimeoutRef.current !== null) {
-        window.clearTimeout(bottomNavTimeoutRef.current);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     saveProgress(progress);
@@ -1421,13 +1384,7 @@ export default function App() {
 
         <InstitutionalFooter />
 
-        <nav
-          className={`bottom-nav ${isNavVisible ? "nav-visible" : "nav-hidden"}`}
-          aria-label="Navegación principal"
-          onPointerEnter={() => showBottomNav(1800)}
-          onPointerMove={() => showBottomNav(1800)}
-          onFocusCapture={() => showBottomNav(1800)}
-        >'
+        <nav className="bottom-nav" aria-label="Navegación principal">'
           <button className={`nav-item ${screen === "home" ? "active" : ""}`} onClick={goToHome}>
             <NavIcon type="inicio" />
             <span>Inicio</span>

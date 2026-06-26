@@ -4940,35 +4940,34 @@ body {
 /* === ECOS FLOW MISION MAPA END === */
 
 
-/* === ECOS BOTTOM NAV CENTER FINAL START === */
+/* === ECOS BOTTOM NAV STABLE START === */
 
-/* El menú no ocupa pantalla cuando está oculto */
+/* Espacio para que el contenido no quede debajo del menú */
 .phone-screen {
   position: relative;
-  padding-bottom: 24px !important;
+  padding-bottom: 112px !important;
 }
 
-/* Barra inferior centrada y estable */
+/* Menú inferior estable */
 .bottom-nav {
   position: fixed !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: calc(10px + env(safe-area-inset-bottom)) !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: calc(12px + env(safe-area-inset-bottom)) !important;
+  transform: translateX(-50%) !important;
 
-  width: min(540px, calc(100vw - 22px)) !important;
+  width: min(540px, calc(100vw - 28px)) !important;
+  max-width: calc(100vw - 28px) !important;
   height: 76px !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-
   box-sizing: border-box !important;
 
-  display: grid !important;
-  grid-template-columns: 1fr 1fr 88px 1fr 1fr !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
   align-items: center !important;
-  justify-items: center !important;
-  gap: 0 !important;
+  gap: 4px !important;
 
-  padding: 8px 10px !important;
+  padding: 8px 12px !important;
   border-radius: 34px !important;
 
   background: rgba(255, 255, 255, 0.94) !important;
@@ -4978,44 +4977,26 @@ body {
   box-shadow: 0 16px 36px rgba(19, 62, 120, 0.22) !important;
   z-index: 9999 !important;
   overflow: visible !important;
-
-  transition: opacity 220ms ease, transform 260ms ease !important;
-  will-change: transform, opacity;
-}
-
-/* Visible: aparece desde abajo sin correrse a los costados */
-.bottom-nav.nav-visible,
-.bottom-nav.nav-visible:hover,
-.bottom-nav.nav-visible:focus-within {
-  opacity: 1 !important;
   pointer-events: auto !important;
-  transform: translate3d(0, 0, 0) !important;
 }
 
-/* Oculto: baja fuera de pantalla */
-.bottom-nav.nav-hidden {
-  opacity: 0 !important;
-  pointer-events: none !important;
-  transform: translate3d(0, 125%, 0) !important;
-}
-
-/* Todos los botones ocupan su columna */
+/* Todos los botones vuelven a su lugar */
 .bottom-nav > button {
   appearance: none !important;
   border: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
 
-  width: 100% !important;
-  min-width: 0 !important;
-  height: 60px !important;
-
   position: relative !important;
   left: auto !important;
   right: auto !important;
-  top: auto !important;
   bottom: auto !important;
+  top: auto !important;
   transform: none !important;
+
+  min-width: 0 !important;
+  height: 60px !important;
+  flex: 1 1 0 !important;
 
   display: flex !important;
   flex-direction: column !important;
@@ -5025,28 +5006,10 @@ body {
 
   background: transparent !important;
   box-shadow: none !important;
+  z-index: 1 !important;
 }
 
-/* Nada se mueve con hover/touch */
-.bottom-nav > button:hover,
-.bottom-nav > button:active,
-.bottom-nav > button:focus,
-.bottom-nav .nav-item:hover,
-.bottom-nav .nav-item:active,
-.bottom-nav .scan-nav:hover,
-.bottom-nav .scan-nav:active {
-  transform: none !important;
-}
-
-/* Íconos laterales */
-.bottom-nav .nav-item svg {
-  width: 27px !important;
-  height: 27px !important;
-  display: block !important;
-  stroke: #58708d !important;
-}
-
-/* Textos laterales */
+/* Texto de Inicio / Mapa / Logros / Menú */
 .bottom-nav .nav-item span {
   display: block !important;
   position: static !important;
@@ -5060,6 +5023,14 @@ body {
   white-space: nowrap !important;
 }
 
+/* Íconos laterales */
+.bottom-nav .nav-item svg {
+  width: 27px !important;
+  height: 27px !important;
+  display: block !important;
+  stroke: #58708d !important;
+}
+
 /* Activo */
 .bottom-nav .nav-item.active span,
 .bottom-nav .nav-item.active svg {
@@ -5067,23 +5038,23 @@ body {
   stroke: #0873ff !important;
 }
 
-/* Botón central */
+/* Botón central de escaneo */
 .bottom-nav .scan-nav {
-  width: 82px !important;
-  height: 82px !important;
+  flex: 0 0 84px !important;
+  width: 84px !important;
+  height: 84px !important;
+
   border-radius: 999px !important;
-
   top: -18px !important;
-  justify-self: center !important;
-
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
+  transform: none !important;
 
   background: linear-gradient(180deg, #168cff 0%, #075bdd 100%) !important;
   border: 8px solid rgba(255, 255, 255, 0.98) !important;
   box-shadow: 0 18px 34px rgba(0, 84, 210, 0.34) !important;
 
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
   z-index: 2 !important;
 }
 
@@ -5099,27 +5070,41 @@ body {
   display: none !important;
 }
 
+/* Evita que los botones de cada pantalla queden tapados */
+.page-section,
+.hero-section,
+.route-card,
+.reward-section,
+.album-section,
+.orientation-section {
+  padding-bottom: 118px !important;
+}
+
+.institutional-footer {
+  padding-bottom: 118px !important;
+}
+
 @media (max-width: 390px) {
   .bottom-nav {
-    width: calc(100vw - 16px) !important;
-    grid-template-columns: 1fr 1fr 78px 1fr 1fr !important;
-    padding: 7px 8px !important;
+    width: calc(100vw - 20px) !important;
+    padding: 7px 9px !important;
+    gap: 2px !important;
+  }
+
+  .bottom-nav > button {
+    height: 56px !important;
   }
 
   .bottom-nav .scan-nav {
-    width: 76px !important;
-    height: 76px !important;
-    top: -15px !important;
-  }
-
-  .bottom-nav .nav-item svg {
-    width: 25px !important;
-    height: 25px !important;
+    flex-basis: 78px !important;
+    width: 78px !important;
+    height: 78px !important;
+    top: -16px !important;
   }
 
   .bottom-nav .nav-item span {
-    font-size: 0.61rem !important;
+    font-size: 0.62rem !important;
   }
 }
 
-/* === ECOS BOTTOM NAV CENTER FINAL END === */
+/* === ECOS BOTTOM NAV STABLE END === */
