@@ -442,27 +442,14 @@ function NavIcon({ type }: { type: "inicio" | "mapa" | "eco" | "logros" | "menu"
 
 function Header() {
   return (
-    <header className="top-brand minimal-brand">
-      <img
-        src="/logo-maxima-verde.png"
-        alt="La Máxima"
-        className="maxima-symbol"
-      />
+    <header className="top-brand centered-brand">
+      <div className="maxima-brand-box">
+        <img src="/logo-la-maxima.png" alt="Polo Educativo y Recreativo La Máxima" />
+      </div>
     </header>
   );
 }
 
-function InstitutionalFooter() {
-  return (
-    <footer className="institutional-footer">
-      <img
-        src="/logo-municipio-color.png"
-        alt="Municipio de Olavarría"
-        className="municipio-logo"
-      />
-    </footer>
-  );
-}
 function BackgroundLines() {
   return (
     <div className="background-lines" aria-hidden="true">
@@ -510,7 +497,6 @@ export default function App() {
   const qrReadRef = useRef(false);
   const hasProcessedUrlRef = useRef(false);
   const transitionTimeoutRef = useRef<number | null>(null);
-  const screenTopRef = useRef<HTMLDivElement | null>(null);
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioUnlockedRef = useRef(false);
@@ -840,35 +826,6 @@ export default function App() {
     unlockAudio();
     setScreen("orientation");
   }
-  useEffect(() => {
-    const scrollToTop = () => {
-      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-
-      const phoneScreen = document.querySelector(".phone-screen");
-
-      if (phoneScreen instanceof HTMLElement) {
-        phoneScreen.scrollTop = 0;
-      }
-
-      screenTopRef.current?.scrollIntoView({
-        block: "start",
-        inline: "nearest",
-        behavior: "auto"
-      });
-    };
-
-    scrollToTop();
-
-    const frame = window.requestAnimationFrame(scrollToTop);
-    const timeout = window.setTimeout(scrollToTop, 80);
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.clearTimeout(timeout);
-    };
-  }, [screen, pendingCode, rewardZoneId, completedZoneForMap]);
 
   useEffect(() => {
     saveProgress(progress);
@@ -1062,8 +1019,6 @@ export default function App() {
       <section className="phone-screen">
         <Header />
         <BackgroundLines />
-
-        <div ref={screenTopRef} className="screen-scroll-anchor" aria-hidden="true" />
 
         {screen === "home" && (
           <>
@@ -1429,9 +1384,7 @@ export default function App() {
           </section>
         )}
 
-        <InstitutionalFooter />
-
-        <nav className="bottom-nav" aria-label="Navegación principal">'
+        <nav className="bottom-nav" aria-label="Navegación principal">
           <button className={`nav-item ${screen === "home" ? "active" : ""}`} onClick={goToHome}>
             <NavIcon type="inicio" />
             <span>Inicio</span>

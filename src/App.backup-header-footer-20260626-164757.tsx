@@ -443,11 +443,13 @@ function NavIcon({ type }: { type: "inicio" | "mapa" | "eco" | "logros" | "menu"
 function Header() {
   return (
     <header className="top-brand minimal-brand">
-      <img
-        src="/logo-maxima-verde.png"
-        alt="La Máxima"
-        className="maxima-symbol"
-      />
+      <div className="maxima-symbol-wrap">
+        <img
+          src="/logo-maxima-verde.png"
+          alt="La Máxima"
+          className="maxima-symbol"
+        />
+      </div>
     </header>
   );
 }
@@ -463,6 +465,7 @@ function InstitutionalFooter() {
     </footer>
   );
 }
+
 function BackgroundLines() {
   return (
     <div className="background-lines" aria-hidden="true">
