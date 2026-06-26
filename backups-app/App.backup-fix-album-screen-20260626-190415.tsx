@@ -990,7 +990,7 @@ export default function App() {
   }, [screen]);
 
   useEffect(() => {
-    const isFinalCelebrationMoment = isExperienceComplete && (screen === "achievements" || screen === "map");
+    const isFinalCelebrationMoment = isExperienceComplete && (screen === "album" || screen === "map");
 
     if (isFinalCelebrationMoment && !hasCelebratedFinalRef.current) {
       hasCelebratedFinalRef.current = true;
@@ -1525,7 +1525,7 @@ export default function App() {
 
         {showConfetti && <ConfettiBurst />}
 
-        {isExperienceComplete && (screen === "achievements" || screen === "map") && (
+        {isExperienceComplete && (screen === "album" || screen === "map") && (
           <section className="end-feedback-section" aria-label="Calificar experiencia">
             <div className="end-feedback-card">
               <span className="end-feedback-kicker">¡Misión completada!</span>
