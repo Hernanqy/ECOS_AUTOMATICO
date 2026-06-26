@@ -1182,7 +1182,7 @@ export default function App() {
             <div className="question-card">
               <span className="mission-kicker">Pregunta del eco</span>
               <h2>{currentQuestion.title}</h2>
-              <p className="question-text">{currentQuestion.question}</p>
+              <p>{currentQuestion.question}</p>
 
               <div className="question-options">
                 {currentQuestion.options.map((option) => (
