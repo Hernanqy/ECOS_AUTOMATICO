@@ -442,40 +442,6 @@ function NavIcon({ type }: { type: "inicio" | "mapa" | "eco" | "logros" | "menu"
 
 
 
-function ConfettiBurst() {
-  const pieces = Array.from({ length: 72 }, (_, index) => index);
-
-  return (
-    <div className="confetti-burst" aria-hidden="true">
-      {pieces.map((piece) => (
-        <span
-          key={piece}
-          className={"confetti-piece confetti-piece-" + ((piece % 12) + 1)}
-        />
-      ))}
-    </div>
-  );
-}
-
-function downloadExperienceRatings() {
-  try {
-    const raw = localStorage.getItem("ecos-experience-ratings") || "[]";
-    const blob = new Blob([raw], { type: "application/json;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = "ecos-calificaciones.json";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error("No se pudieron descargar las calificaciones", error);
-  }
-}
-
 function playVictorySound() {
   try {
     const audio = new Audio("/sounds/victoria.mp3?v=" + Date.now());
