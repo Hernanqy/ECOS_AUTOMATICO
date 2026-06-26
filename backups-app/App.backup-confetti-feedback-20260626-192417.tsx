@@ -442,7 +442,7 @@ function NavIcon({ type }: { type: "inicio" | "mapa" | "eco" | "logros" | "menu"
 
 
 function ConfettiBurst() {
-  const pieces = Array.from({ length: 72 }, (_, index) => index);
+  const pieces = Array.from({ length: 34 }, (_, index) => index);
 
   return (
     <div className="confetti-burst" aria-hidden="true">
@@ -551,7 +551,7 @@ export default function App() {
   const hasProcessedUrlRef = useRef(false);
   const transitionTimeoutRef = useRef<number | null>(null);
   const celebrationTimeoutRef = useRef<number | null>(null);
-  const lastCelebratedMomentRef = useRef("");
+  const hasCelebratedFinalRef = useRef(false);
   const bottomNavTimeoutRef = useRef<number | null>(null);
   const screenTopRef = useRef<HTMLDivElement | null>(null);
 
@@ -597,7 +597,7 @@ export default function App() {
     celebrationTimeoutRef.current = window.setTimeout(() => {
       setShowConfetti(false);
       celebrationTimeoutRef.current = null;
-    }, 2900);
+    }, 1900);
   }
 
   function submitExperienceRating(value: number, label = "") {
@@ -990,21 +990,17 @@ export default function App() {
   }, [screen]);
 
   useEffect(() => {
-    const finalScreenKey =
-      isExperienceComplete && (screen === "achievements" || screen === "map")
-        ? screen
-        : "";
+    const isFinalCelebrationMoment = isExperienceComplete && (screen === "achievements" || screen === "map");
 
-    if (finalScreenKey && lastCelebratedMomentRef.current !== finalScreenKey) {
-      lastCelebratedMomentRef.current = finalScreenKey;
+    if (isFinalCelebrationMoment && !hasCelebratedFinalRef.current) {
+      hasCelebratedFinalRef.current = true;
       celebrateFinalMoment();
     }
 
     if (!isExperienceComplete) {
-      lastCelebratedMomentRef.current = "";
+      hasCelebratedFinalRef.current = false;
     }
   }, [screen, isExperienceComplete]);
-
 
   useEffect(() => {
     return () => {
