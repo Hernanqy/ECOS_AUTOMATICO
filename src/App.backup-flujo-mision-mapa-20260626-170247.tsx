@@ -1121,14 +1121,15 @@ export default function App() {
             </section>
           </>
         )}
-        {screen === "intro" && (
-          <section className="page-section intro-mission-section mission-only-section">
+
+                {screen === "intro" && (
+          <section className="page-section intro-mission-section">
             <div className="page-title intro-title-clean">
               <span>Antes de empezar</span>
               <h2>Tu misión</h2>
             </div>
 
-            <div className="intro-steps-card intro-steps-featured mission-steps-only">
+            <div className="intro-steps-card intro-steps-featured">
               <div>
                 <strong>1</strong>
                 <span>Explorá cada zona.</span>
@@ -1143,30 +1144,76 @@ export default function App() {
               </div>
             </div>
 
-            <button className="start-button compact mission-map-button" onClick={goToMap}>
-              <span>Ver mapa</span>
+            <div
+              className="intro-map-card intro-map-small intro-map-clickable"
+              role="button"
+              tabIndex={0}
+              onClick={goToMap}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  goToMap();
+                }
+              }}
+            >
+              <img src="/mapa-inicio-museo.png" alt="Mapa del punto de partida en el Museo" />
+            </div>
+          
+
+            <button className="start-button compact intro-start-button" onClick={goToMap}>
+              <span>Iniciar misión</span>
               <svg viewBox="0 0 40 40" aria-hidden="true">
                 <path d="M8 20h22" />
                 <path d="m22 11 9 9-9 9" />
               </svg>
             </button>
-          </section>
+</section>
         )}
 
-        {screen === "map" && (
-          <section className="page-section map-screen-section map-image-only-section">
+                {screen === "map" && (
+          <section className="page-section map-screen-section map-clean-section">
             <div className="page-title map-clean-title">
-              <span>Mapa de misión</span>
-              <h2>Recorrido inicial</h2>
-              <p>Observá el mapa y luego comenzá la primera zona.</p>
+              <span>Recorrido</span>
+              <h2>Zonas de la misión</h2>
+              <p>Seguí el orden del recorrido para completar la experiencia.</p>
             </div>
 
-            <div className="intro-map-card map-full-card">
-              <img src="/mapa-inicio-museo.png" alt="Mapa de misión desde el Museo" />
+            <div className="map-list clean-zone-list">
+              {zones.map((zone, index) => {
+                const isActive = index === safeProgress.currentZoneIndex;
+                const isDone = isZoneComplete(safeProgress, zone);
+                const isLocked = index > safeProgress.currentZoneIndex;
+
+                return (
+                  <button
+                    className={`map-item ${isActive ? "active" : ""} ${isDone ? "done" : ""} ${isLocked ? "locked" : ""}`}
+                    key={zone.id}
+                    disabled
+                  >
+                    <div className="map-icon">
+                      <img src={zone.icon} alt="" />
+                    </div>
+
+                    <div className="map-info">
+                      <strong>{zone.label}</strong>
+                      <span>
+                        {isDone
+                          ? "Completado"
+                          : isActive
+                            ? "Zona actual"
+                            : "Bloqueado"}
+                      </span>
+                    </div>
+
+                    <div className="map-state">
+                      {isDone ? "✓" : isActive ? "●" : "×"}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
 
-            <button className="start-button compact map-start-button" onClick={goToMission}>
-              <span>{isExperienceComplete ? "Ver estado final" : "Iniciar misión"}</span>
+            <button className="start-button compact map-mission-button" onClick={goToMission}>
+              <span>{isExperienceComplete ? "Ver estado final" : "Ir a misión"}</span>
               <svg viewBox="0 0 40 40" aria-hidden="true">
                 <path d="M8 20h22" />
                 <path d="m22 11 9 9-9 9" />
