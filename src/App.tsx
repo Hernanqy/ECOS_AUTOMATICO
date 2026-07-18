@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
 type Screen =
@@ -62,7 +62,7 @@ const zones: Zone[] = [
     label: "Museo",
     title: "Ecos del pasado",
     mission: "",
-    success: "¡Museo completo! Ganaste una estampa.",
+    success: "Â¡Museo completo! Ganaste una estampa.",
     icon: "/icons/museo.png",
     codes: ["M1", "M2"]
   },
@@ -70,8 +70,8 @@ const zones: Zone[] = [
     id: "lago",
     label: "Lago",
     title: "Ecos del agua",
-    mission: "Buscá 2 ecos cerca del agua.",
-    success: "¡Lago completo! Ganaste una estampa.",
+    mission: "BuscÃ¡ 2 ecos cerca del agua.",
+    success: "Â¡Lago completo! Ganaste una estampa.",
     icon: "/icons/lago.png",
     codes: ["L1", "L2"]
   },
@@ -79,8 +79,8 @@ const zones: Zone[] = [
     id: "condorera",
     label: "Condorera",
     title: "Ecos del aire",
-    mission: "Buscá 2 ecos mirando alto.",
-    success: "¡Condorera completa! Ganaste una estampa.",
+    mission: "BuscÃ¡ 2 ecos mirando alto.",
+    success: "Â¡Condorera completa! Ganaste una estampa.",
     icon: "/icons/condorera.png",
     codes: ["CO1", "CO2"]
   },
@@ -88,8 +88,8 @@ const zones: Zone[] = [
     id: "casona",
     label: "Casona",
     title: "Ecos de la casa",
-    mission: "Buscá los últimos 2 ecos.",
-    success: "¡Casona completa! Ganaste la última estampa.",
+    mission: "BuscÃ¡ los Ãºltimos 2 ecos.",
+    success: "Â¡Casona completa! Ganaste la Ãºltima estampa.",
     icon: "/icons/casona.png",
     codes: ["CA1", "CA2"]
   }
@@ -97,7 +97,7 @@ const zones: Zone[] = [
 
 const rewards: Record<ZoneId, Reward> = {
   museo: {
-    title: "La Científica",
+    title: "La CientÃ­fica",
     subtitle: "Premio del Museo",
     phrase: "El conocimiento ilumina cada descubrimiento.",
     image: "/rewards/estampa-cientifica.png"
@@ -111,11 +111,11 @@ const rewards: Record<ZoneId, Reward> = {
   condorera: {
     title: "El Ancestro",
     subtitle: "Premio de La Condorera",
-    phrase: "La memoria del territorio también vuela alto.",
+    phrase: "La memoria del territorio tambiÃ©n vuela alto.",
     image: "/rewards/estampa-ancestro.png"
   },
   casona: {
-    title: "El Guía",
+    title: "El GuÃ­a",
     subtitle: "Premio de La Casona",
     phrase: "Cada historia compartida abre una nueva puerta.",
     image: "/rewards/estampa-guia.png"
@@ -126,106 +126,106 @@ const questions: Record<string, EcoQuestion> = {
   M1: {
     code: "M1",
     title: "Eco de la megafauna",
-    question: "Buscá el nombre del animal parecido al hipopótamo.",
+    question: "BuscÃ¡ el nombre del animal parecido al hipopÃ³tamo.",
     options: [
       { id: "A", text: "Gliptodonte" },
       { id: "B", text: "Macrauquenia" },
-      { id: "C", text: "Toxodón" }
+      { id: "C", text: "ToxodÃ³n" }
     ],
     correctOptionId: "C",
-    successText: "¡Correcto! El Toxodón fue un gran mamífero prehistórico parecido al hipopótamo.",
-    errorText: "Casi. Buscá bien el nombre del animal parecido al hipopótamo."
+    successText: "Â¡Correcto! El ToxodÃ³n fue un gran mamÃ­fero prehistÃ³rico parecido al hipopÃ³tamo.",
+    errorText: "Casi. BuscÃ¡ bien el nombre del animal parecido al hipopÃ³tamo."
   },
   M2: {
     code: "M2",
     title: "Eco del Sistema Solar",
-    question: "¿Cuándo se formó y evolucionó el Sistema Solar?",
+    question: "Â¿CuÃ¡ndo se formÃ³ y evolucionÃ³ el Sistema Solar?",
     options: [
-      { id: "A", text: "Hace 20.000 años" },
-      { id: "B", text: "Hace 4.600 millones de años" },
-      { id: "C", text: "Hace 3.500 millones de años" }
+      { id: "A", text: "Hace 20.000 aÃ±os" },
+      { id: "B", text: "Hace 4.600 millones de aÃ±os" },
+      { id: "C", text: "Hace 3.500 millones de aÃ±os" }
     ],
     correctOptionId: "B",
-    successText: "¡Muy bien! El Sistema Solar se formó hace aproximadamente 4.600 millones de años.",
-    errorText: "Probá otra vez. Pensá en una escala de tiempo mucho más antigua."
+    successText: "Â¡Muy bien! El Sistema Solar se formÃ³ hace aproximadamente 4.600 millones de aÃ±os.",
+    errorText: "ProbÃ¡ otra vez. PensÃ¡ en una escala de tiempo mucho mÃ¡s antigua."
   },
   L1: {
     code: "L1",
     title: "Eco del carpincho",
-    question: "Vivo cerca del agua, nado sin ser pez, soy tranquilo y bigotón. ¿Quién soy?",
+    question: "Vivo cerca del agua, nado sin ser pez, soy tranquilo y bigotÃ³n. Â¿QuiÃ©n soy?",
     options: [
       { id: "A", text: "Tortuga" },
       { id: "B", text: "Lechuza" },
       { id: "C", text: "Carpincho" }
     ],
     correctOptionId: "C",
-    successText: "¡Correcto! El carpincho vive cerca del agua y es parte de estos ambientes.",
-    errorText: "Casi. Pensá en un animal tranquilo, bigotón y muy cercano a las lagunas."
+    successText: "Â¡Correcto! El carpincho vive cerca del agua y es parte de estos ambientes.",
+    errorText: "Casi. PensÃ¡ en un animal tranquilo, bigotÃ³n y muy cercano a las lagunas."
   },
   L2: {
     code: "L2",
     title: "Eco del lago",
-    question: "¿Cómo se llama el lago que ves?",
+    question: "Â¿CÃ³mo se llama el lago que ves?",
     options: [
       { id: "A", text: "El Resplandor" },
       { id: "B", text: "Jacques Cousteau" },
       { id: "C", text: "Pampa" }
     ],
     correctOptionId: "B",
-    successText: "¡Excelente! El lago se llama Jacques Cousteau.",
-    errorText: "Probá otra vez. Mirá bien el nombre del lago."
+    successText: "Â¡Excelente! El lago se llama Jacques Cousteau.",
+    errorText: "ProbÃ¡ otra vez. MirÃ¡ bien el nombre del lago."
   },
   CO1: {
     code: "CO1",
-    title: "Eco del cóndor",
-    question: "¿Cuánto puede vivir un cóndor?",
+    title: "Eco del cÃ³ndor",
+    question: "Â¿CuÃ¡nto puede vivir un cÃ³ndor?",
     options: [
-      { id: "A", text: "70 años" },
-      { id: "B", text: "40 años" },
-      { id: "C", text: "20 años" }
+      { id: "A", text: "70 aÃ±os" },
+      { id: "B", text: "40 aÃ±os" },
+      { id: "C", text: "20 aÃ±os" }
     ],
     correctOptionId: "A",
-    successText: "¡Correcto! Un cóndor puede vivir alrededor de 70 años.",
-    errorText: "Casi. Pensá en un ave muy longeva."
+    successText: "Â¡Correcto! Un cÃ³ndor puede vivir alrededor de 70 aÃ±os.",
+    errorText: "Casi. PensÃ¡ en un ave muy longeva."
   },
   CO2: {
     code: "CO2",
-    title: "Eco del ñandú",
-    question: "No me busques en el agua, ni arriba de una rama. Mirá bien a tu alrededor: tengo patas largas, corro veloz, pero aunque tengo alas… no vuelo. ¿Quién soy?",
+    title: "Eco del Ã±andÃº",
+    question: "No me busques en el agua, ni arriba de una rama. MirÃ¡ bien a tu alrededor: tengo patas largas, corro veloz, pero aunque tengo alasâ€¦ no vuelo. Â¿QuiÃ©n soy?",
     options: [
-      { id: "A", text: "Ñandú" },
+      { id: "A", text: "Ã‘andÃº" },
       { id: "B", text: "Carpincho" },
       { id: "C", text: "Lechuza" }
     ],
     correctOptionId: "A",
-    successText: "¡Muy bien! El ñandú corre veloz, tiene alas, pero no vuela.",
-    errorText: "Probá otra vez. Pensá en un ave grande de patas largas que corre rápido."
+    successText: "Â¡Muy bien! El Ã±andÃº corre veloz, tiene alas, pero no vuela.",
+    errorText: "ProbÃ¡ otra vez. PensÃ¡ en un ave grande de patas largas que corre rÃ¡pido."
   },
   CA1: {
     code: "CA1",
-    title: "Eco de la yarará",
-    question: "En mi cuerpo llevo dibujos que parecen una cruz al mirar. ¿Quién soy?",
+    title: "Eco de la yararÃ¡",
+    question: "En mi cuerpo llevo dibujos que parecen una cruz al mirar. Â¿QuiÃ©n soy?",
     options: [
-      { id: "A", text: "Yarará grande" },
+      { id: "A", text: "YararÃ¡ grande" },
       { id: "B", text: "Tortuga" },
       { id: "C", text: "Lagarto" }
     ],
     correctOptionId: "A",
-    successText: "¡Correcto! La yarará grande tiene dibujos característicos que pueden parecer cruces.",
-    errorText: "Casi. Observá cuál animal tiene dibujos con forma de cruz."
+    successText: "Â¡Correcto! La yararÃ¡ grande tiene dibujos caracterÃ­sticos que pueden parecer cruces.",
+    errorText: "Casi. ObservÃ¡ cuÃ¡l animal tiene dibujos con forma de cruz."
   },
   CA2: {
     code: "CA2",
     title: "Eco de la Casona",
-    question: "Tengo paredes antiguas y memoria de estancia. Buscá en mi historia el año inicial: ¿desde cuándo esta casona nos mira pasar?",
+    question: "Tengo paredes antiguas y memoria de estancia. BuscÃ¡ en mi historia el aÃ±o inicial: Â¿desde cuÃ¡ndo esta casona nos mira pasar?",
     options: [
       { id: "A", text: "1877" },
       { id: "B", text: "1979" },
       { id: "C", text: "2024" }
     ],
     correctOptionId: "A",
-    successText: "¡Excelente! La Casona conserva memoria desde 1877.",
-    errorText: "Probá otra vez. Buscá el año inicial en la historia de la Casona."
+    successText: "Â¡Excelente! La Casona conserva memoria desde 1877.",
+    errorText: "ProbÃ¡ otra vez. BuscÃ¡ el aÃ±o inicial en la historia de la Casona."
   }
 };
 
@@ -499,7 +499,7 @@ function Header() {
     <header className="top-brand minimal-brand">
       <img
         src="/logo-maxima-verde.png"
-        alt="La Máxima"
+        alt="La MÃ¡xima"
         className="maxima-symbol"
       />
     </header>
@@ -511,7 +511,7 @@ function InstitutionalFooter() {
     <footer className="institutional-footer">
       <img
         src="/logo-municipio-color.png"
-        alt="Municipio de Olavarría"
+        alt="Municipio de OlavarrÃ­a"
         className="municipio-logo"
       />
     </footer>
@@ -644,7 +644,7 @@ export default function App() {
       localStorage.setItem("ecos-experience-rating-submitted", "true");
       setFeedbackSubmitted(true);
     } catch (error) {
-      console.error("No se pudo guardar la calificación", error);
+      console.error("No se pudo guardar la calificaciÃ³n", error);
     }
   }
 
@@ -805,7 +805,7 @@ export default function App() {
       if (scannedZoneIndex < activeZoneIndex) {
         return {
           ok: false,
-          message: `Ese eco ya fue encontrado. Ahora seguí con ${activeZone.label}.`
+          message: `Ese eco ya fue encontrado. Ahora seguÃ­ con ${activeZone.label}.`
         };
       }
 
@@ -818,14 +818,14 @@ export default function App() {
     if (scannedZoneIndex < activeZoneIndex) {
       return {
         ok: false,
-        message: `Esa zona ya fue completada. Ahora seguí con ${activeZone.label}.`
+        message: `Esa zona ya fue completada. Ahora seguÃ­ con ${activeZone.label}.`
       };
     }
 
     if (scannedZoneIndex > activeZoneIndex) {
       return {
         ok: false,
-        message: `Todavía no llegaste a ${scannedZone.label}. Primero completá ${activeZone.label}.`
+        message: `TodavÃ­a no llegaste a ${scannedZone.label}. Primero completÃ¡ ${activeZone.label}.`
       };
     }
 
@@ -851,7 +851,7 @@ export default function App() {
     if (!questions[scannedCode]) {
       playSound("duplicate");
       setScreen("scanner");
-      returnToCurrentMission("Este eco todavía no tiene pregunta cargada.", 2200);
+      returnToCurrentMission("Este eco todavÃ­a no tiene pregunta cargada.", 2200);
       return;
     }
 
@@ -904,7 +904,7 @@ export default function App() {
     });
 
     if (completedAllZones) {
-      // El sonido final se reproduce solo al abrir el álbum con victoria.mp3.
+      // El sonido final se reproduce solo al abrir el Ã¡lbum con victoria.mp3.
     } else if (zoneCompleted) {
       playSound("zone");
     } else {
@@ -916,7 +916,7 @@ export default function App() {
     const question = questions[code];
 
     if (completedAllZones) {
-      setQuestionFeedback("¡Correcto! Completaste todos los ecos.");
+      setQuestionFeedback("Â¡Correcto! Completaste todos los ecos.");
     } else if (zoneCompleted) {
       setQuestionFeedback(scannedZone.success);
     } else {
@@ -1120,7 +1120,7 @@ export default function App() {
       if (scannerRunningRef.current || scannerRef.current) return;
 
       setManualCode("");
-      setScanMessage("Apuntá la cámara al QR.");
+      setScanMessage("ApuntÃ¡ la cÃ¡mara al QR.");
 
       const readerId = `qr-reader-${scannerSession}`;
       const readerElement = document.getElementById(readerId);
@@ -1158,7 +1158,7 @@ export default function App() {
 
         scannerRunningRef.current = true;
       } catch {
-        setScanMessage("No se pudo abrir la cámara.");
+        setScanMessage("No se pudo abrir la cÃ¡mara.");
         scannerRef.current = null;
         scannerRunningRef.current = false;
         qrReadRef.current = false;
@@ -1265,7 +1265,7 @@ export default function App() {
               <div className="title-block">
                 <h1>
                   <span>Ecos de</span>
-                  <strong>La Máxima</strong>
+                  <strong>La MÃ¡xima</strong>
                 </h1>
 
                 <div className="echo-mark" aria-hidden="true">
@@ -1274,16 +1274,16 @@ export default function App() {
                   <span />
                 </div>
 
-                <p>Explorá el Polo y encontrá los ecos escondidos.</p>
+                <p>ExplorÃ¡ el Polo y encontrÃ¡ los ecos escondidos.</p>
               </div>
 
               <div className="guide-wrap">
                 <div className="speech-bubble">
-                  <strong>¡Hola!</strong><span>Soy el Profesor Echarpe,</span>
+                  <strong>Â¡Hola!</strong><span>Soy el Profesor Echarpe,</span>
                    <span className="hero-speech-line">Comencemos la aventura!</span>
                 </div>
 
-                <img className="guide-character" src="/personaje.png" alt="Guía de la experiencia" />
+                <img className="guide-character" src="/personaje.png" alt="GuÃ­a de la experiencia" />
               </div>
             </section>
 
@@ -1319,21 +1319,21 @@ export default function App() {
           <section className="page-section intro-mission-section mission-only-section">
             <div className="page-title intro-title-clean">
               <span>Antes de empezar</span>
-              <h2>Tu misión</h2>
+              <h2>Tu misiÃ³n</h2>
             </div>
 
             <div className="intro-steps-card intro-steps-featured mission-steps-only">
               <div>
                 <strong>1</strong>
-                <span>Explorá cada zona.</span>
+                <span>ExplorÃ¡ cada zona.</span>
               </div>
               <div>
                 <strong>2</strong>
-                <span>Encontrá y escaneá los QR.</span>
+                <span>EncontrÃ¡ y escaneÃ¡ los QR.</span>
               </div>
               <div>
                 <strong>3</strong>
-                <span>Respondé y ganá estampas.</span>
+                <span>RespondÃ© y ganÃ¡ estampas.</span>
               </div>
             </div>
 
@@ -1350,17 +1350,17 @@ export default function App() {
         {screen === "map" && (
           <section className="page-section map-screen-section map-image-only-section">
             <div className="page-title map-clean-title">
-              <span>Mapa de misión</span>
+              <span>Mapa de misiÃ³n</span>
               <h2>Recorrido inicial</h2>
-              <p>Observá el mapa y luego comenzá la primera zona.</p>
+              <p>ObservÃ¡ el mapa y luego comenzÃ¡ la primera zona.</p>
             </div>
 
             <div className="intro-map-card map-full-card">
-              <img src="/mapa-inicio-museo.png" alt="Mapa de misión desde el Museo" />
+              <img src="/mapa-inicio-museo.png" alt="Mapa de misiÃ³n desde el Museo" />
             </div>
 
             <button className="start-button compact map-start-button" onClick={goToMission}>
-              <span>{isExperienceComplete ? "Ver estado final" : "Iniciar misión"}</span>
+              <span>{isExperienceComplete ? "Ver estado final" : "Iniciar misiÃ³n"}</span>
               <svg viewBox="0 0 40 40" aria-hidden="true">
                 <path d="M8 20h22" />
                 <path d="m22 11 9 9-9 9" />
@@ -1397,7 +1397,7 @@ export default function App() {
               )}
 
               <button className="secondary-button" onClick={goToMission}>
-                Volver a misión
+                Volver a misiÃ³n
               </button>
             </div>
           </section>
@@ -1432,17 +1432,17 @@ export default function App() {
         {screen === "orientation" && (
           <section className="page-section orientation-section">
             <div className="page-title">
-              <span>Orientación</span>
-              <h2>{isExperienceComplete ? "Misión cumplida" : `${completedLabel} completo`}</h2>
-              <p>{isExperienceComplete ? "Completaste todos los ecos." : `Ahora seguí hacia ${nextLabel}.`}</p>
+              <span>OrientaciÃ³n</span>
+              <h2>{isExperienceComplete ? "MisiÃ³n cumplida" : `${completedLabel} completo`}</h2>
+              <p>{isExperienceComplete ? "Completaste todos los ecos." : `Ahora seguÃ­ hacia ${nextLabel}.`}</p>
             </div>
 
             <div className="orientation-map-card">
-              <img src={orientationImage} alt="Mapa de orientación" />
+              <img src={orientationImage} alt="Mapa de orientaciÃ³n" />
             </div>
 
             <button className="start-button compact" onClick={goFromOrientation}>
-              <span>{isExperienceComplete ? "Ver álbum" : `Ir a ${nextLabel}`}</span>
+              <span>{isExperienceComplete ? "Ver Ã¡lbum" : `Ir a ${nextLabel}`}</span>
               <svg viewBox="0 0 40 40" aria-hidden="true">
                 <path d="M8 20h22" />
                 <path d="m22 11 9 9-9 9" />
@@ -1461,7 +1461,7 @@ export default function App() {
               <span className="mission-kicker">Zona {safeProgress.currentZoneIndex + 1} de 4</span>
               <h2>{currentZone.label}</h2>
               <h3>{currentZone.title}</h3>
-              <p>{isExperienceComplete ? "La experiencia está completa." : currentZone.mission}</p>
+              <p>{isExperienceComplete ? "La experiencia estÃ¡ completa." : currentZone.mission}</p>
 
               <div className="progress-card">
                 <strong>{currentFound}/{currentRequired}</strong>
@@ -1476,8 +1476,8 @@ export default function App() {
 
               {isExperienceComplete && (
                 <div className="success-panel">
-                  <strong>¡Final completado!</strong>
-                  <span>Gracias por recorrer Ecos de La Máxima.</span>
+                  <strong>Â¡Final completado!</strong>
+                  <span>Gracias por recorrer Ecos de La MÃ¡xima.</span>
                 </div>
               )}
 
@@ -1491,7 +1491,7 @@ export default function App() {
         {screen === "scanner" && (
           <section className="page-section">
             <div className="page-title">
-              <span>Escáner</span>
+              <span>EscÃ¡ner</span>
               <h2>Buscar eco</h2>
               <p>Zona activa: {currentZone.label}</p>
             </div>
@@ -1512,7 +1512,7 @@ export default function App() {
             </div>
 
             <div className="manual-card">
-              <span>Respaldo técnico</span>
+              <span>Respaldo tÃ©cnico</span>
               <div className="manual-row">
                 <input
                   value={manualCode}
@@ -1536,8 +1536,8 @@ export default function App() {
         {screen === "achievements" && (
           <section className="page-section album-section">
             <div className="page-title">
-              <span>Álbum de estampas</span>
-              <h2>{isExperienceComplete ? "¡Álbum completo!" : "Tus logros"}</h2>
+              <span>Ãlbum de estampas</span>
+              <h2>{isExperienceComplete ? "Â¡Ãlbum completo!" : "Tus logros"}</h2>
               <p>{totalFound}/{totalRequired} ecos encontrados.</p>
             </div>
 
@@ -1565,9 +1565,9 @@ export default function App() {
         {screen === "menu" && (
           <section className="page-section">
             <div className="page-title">
-              <span>Menú</span>
+              <span>MenÃº</span>
               <h2>Opciones</h2>
-              <p>Configuración básica de la experiencia.</p>
+              <p>ConfiguraciÃ³n bÃ¡sica de la experiencia.</p>
             </div>
 
             <button className="menu-button" onClick={goToHome}>Volver al inicio</button>
@@ -1582,25 +1582,25 @@ export default function App() {
         {isExperienceComplete && (screen === "achievements" || screen === "map") && (
           <section className="end-feedback-section" aria-label="Calificar experiencia">
             <div className="end-feedback-card">
-              <span className="end-feedback-kicker">¡Misión completada!</span>
-              <h2>¡Completaste tu álbum!</h2>
+              <span className="end-feedback-kicker">Â¡MisiÃ³n completada!</span>
+              <h2>Â¡Completaste tu Ã¡lbum!</h2>
               <p>
-                Gracias por jugar y descubrir los ecos de La Máxima. ¿Cómo fue tu experiencia?
+                Gracias por jugar y descubrir los ecos de La MÃ¡xima. Â¿CÃ³mo fue tu experiencia?
               </p>
 
               {feedbackSubmitted ? (
                 <div className="feedback-saved">
-                  <strong>¡Gracias por tu calificación!</strong>
+                  <strong>Â¡Gracias por tu calificaciÃ³n!</strong>
                   <button className="feedback-download-button" onClick={downloadExperienceRatings}>
                     Descargar respuestas de este dispositivo
                   </button>
                 </div>
               ) : (
-                <div className="rating-buttons rating-faces" role="group" aria-label="Calificación de la experiencia">
+                <div className="rating-buttons rating-faces" role="group" aria-label="CalificaciÃ³n de la experiencia">
                   {[
-                    { value: 1, label: "Regular", face: "😐" },
-                    { value: 2, label: "Buena", face: "🙂" },
-                    { value: 3, label: "Muy buena", face: "😄" }
+                    { value: 1, label: "Regular", face: "ðŸ˜" },
+                    { value: 2, label: "Buena", face: "ðŸ™‚" },
+                    { value: 3, label: "Muy buena", face: "ðŸ˜„" }
                   ].map((option) => (
                     <button
                       key={option.value}
@@ -1629,7 +1629,7 @@ export default function App() {
 
         <nav
           className={`ecos-bottom-nav ${isNavVisible ? "is-visible" : "is-hidden"}`}
-          aria-label="Navegación principal"
+          aria-label="NavegaciÃ³n principal"
           onPointerDown={() => showBottomNav(2000)}
           onPointerMove={() => showBottomNav(1800)}
           onFocusCapture={() => showBottomNav(2000)}
@@ -1669,13 +1669,14 @@ export default function App() {
             }}
           >
             <NavIcon type="menu" />
-            <span>Menú</span>
+            <span>MenÃº</span>
           </button>
         </nav>
       </section>
     </main>
   );
 }
+
 
 
 
