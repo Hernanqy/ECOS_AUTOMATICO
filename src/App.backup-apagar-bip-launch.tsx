@@ -476,23 +476,6 @@ function downloadExperienceRatings() {
   }
 }
 
-function playAppAudio(filename: string) {
-  try {
-    const audio = new Audio("/sounds/" + filename + "?v=" + Date.now());
-    audio.volume = 0.9;
-
-    const playPromise = audio.play();
-
-    if (playPromise) {
-      playPromise.catch((error) => {
-        console.warn("No se pudo reproducir " + filename, error);
-      });
-    }
-  } catch (error) {
-    console.warn("No se pudo preparar " + filename, error);
-  }
-}
-
 function playVictorySound() {
   try {
     const audio = new Audio("/sounds/victoria.mp3?v=" + Date.now());
@@ -718,7 +701,7 @@ export default function App() {
 
       if (!launchSoundPlayedRef.current) {
         launchSoundPlayedRef.current = true;
-        // launch desactivado
+        playSound("launch");
       }
     } catch {
       // Nada.
@@ -726,8 +709,6 @@ export default function App() {
   }
 
   function playSound(type: SoundType) {
-    if (type === "launch") return;
-
     try {
       if (!audioUnlockedRef.current && type !== "launch") return;
 
@@ -1199,7 +1180,7 @@ export default function App() {
   };
   const goToIntro = () => {
     clearTransitionTimeout();
-    playAppAudio("iniciar-mision.mp3");
+    unlockAudio();
     setScreen("intro");
   };
 
