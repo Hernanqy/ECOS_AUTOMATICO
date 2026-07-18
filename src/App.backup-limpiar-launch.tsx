@@ -729,8 +729,15 @@ export default function App() {
     if (type === "launch") return;
 
     try {
-      if (!audioUnlockedRef.current) return;
-if (type === "found") {
+      if (!audioUnlockedRef.current && type !== "launch") return;
+
+      if (type === "launch") {
+        playTone(440, 0, 0.12, 0.07, "sine");
+        playTone(660, 0.12, 0.14, 0.07, "sine");
+        playTone(880, 0.26, 0.18, 0.06, "triangle");
+      }
+
+      if (type === "found") {
         playTone(660, 0, 0.09, 0.08, "triangle");
         playTone(880, 0.09, 0.12, 0.08, "triangle");
       }
