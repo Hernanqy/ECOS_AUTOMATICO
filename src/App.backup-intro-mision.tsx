@@ -1337,15 +1337,15 @@ if (type === "found") {
             <div className="intro-steps-card intro-steps-featured mission-steps-only">
               <div>
                 <strong>1</strong>
-                <span>Empezá en el Museo y seguí: Lago, Condorera y Casona.</span>
+                <span>Explorá cada zona.</span>
               </div>
               <div>
                 <strong>2</strong>
-                <span>En cada área buscá 2 pistas y escaneá sus QR.</span>
+                <span>Encontrá y escaneá los QR.</span>
               </div>
               <div>
                 <strong>3</strong>
-                <span>Observá, respondé las preguntas y ganá estampas.</span>
+                <span>Respondé y ganá estampas.</span>
               </div>
             </div>
 
