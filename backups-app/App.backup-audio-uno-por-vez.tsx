@@ -476,25 +476,10 @@ function downloadExperienceRatings() {
   }
 }
 
-let currentAppAudio: HTMLAudioElement | null = null;
-
 function playAppAudio(filename: string) {
   try {
-    if (currentAppAudio) {
-      currentAppAudio.pause();
-      currentAppAudio.currentTime = 0;
-      currentAppAudio = null;
-    }
-
     const audio = new Audio("/sounds/" + filename + "?v=" + Date.now());
     audio.volume = 0.9;
-    currentAppAudio = audio;
-
-    audio.onended = () => {
-      if (currentAppAudio === audio) {
-        currentAppAudio = null;
-      }
-    };
 
     const playPromise = audio.play();
 
